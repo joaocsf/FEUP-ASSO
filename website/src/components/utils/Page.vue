@@ -1,7 +1,7 @@
 <template>
   <v-layout warp row>
     <v-flex xs12 sm12 offset-md3 md6> 
-      <v-card color="blue lighten-3">
+      <v-card color="">
         <v-card-title>
         <h1>{{title}}</h1>
         </v-card-title>

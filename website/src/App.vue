@@ -2,7 +2,7 @@
   <div id="app">
     <v-app>
       <custom-header/> 
-      <v-content>
+      <v-content class="grey lighten-3">
         <v-container fluid>
           <router-view/>
         </v-container>

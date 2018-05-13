@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import About from './views/About.vue'
 import Observer from './views/Observer.vue'
+import Command from './views/Command.vue'
 
 Vue.use(Router)
 
@@ -22,6 +23,11 @@ export default new Router({
       path: '/observer',
       name: 'observer',
       component: Observer
+    },
+    {
+      path: '/command',
+      name: 'command',
+      component: Command
     }
   ]
 })
