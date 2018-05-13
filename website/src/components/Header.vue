@@ -32,15 +32,13 @@
 </template>
 
 <script>
+import pages from '@/config/pages.js'
 export default {
   data () {
     return {
       enable: true,
       clipped: false,
-      pages: [
-        {title: 'Observer', icon: 'delete', route: 'home'},
-        {title: 'Observer2', icon: 'delete', route: 'about'}
-      ]
+      pages: pages.pages
     }
   },
   methods: {
