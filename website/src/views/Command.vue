@@ -30,10 +30,6 @@
         </v-layout>
       </div>
     </example>
-
-    <example class="mt-2" title="Notifications">
-    
-    </example>
  </page>
 </template>
 

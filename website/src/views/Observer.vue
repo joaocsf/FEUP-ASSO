@@ -14,10 +14,12 @@
         Your Text:
       </div>
       <div>
-        <box class="white elevation-1 pa-1 ma-1" :text="demo1"/>
-        <box class="white elevation-1 pa-1 ma-1" :text="demo1"/>
-        <box class="white elevation-1 pa-1 ma-1" :text="demo1"/>
-        <box class="white elevation-1 pa-1 ma-1" :text="demo1"/>
+        <v-layout row wrap>
+          <v-flex class="white elevation-1" xs3 v-for="i in [1,2,3,4]" :key="i">
+            .
+            <box :text="demo1 + ' '"/>
+          </v-flex>
+        </v-layout>
       </div>
     </example>
 
