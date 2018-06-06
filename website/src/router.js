@@ -5,6 +5,7 @@ import About from './views/About.vue'
 import Observer from './views/Observer.vue'
 import Command from './views/Command.vue'
 import Step1 from './views/Step1.vue'
+import Step2 from './views/Step2.vue'
 
 Vue.use(Router)
 
@@ -34,6 +35,11 @@ export default new Router({
       path: '/step1',
       name: 'step1',
       component: Step1
+    },
+    {
+      path: '/step2',
+      name: 'step2',
+      component: Step2
     }
   ]
 })
