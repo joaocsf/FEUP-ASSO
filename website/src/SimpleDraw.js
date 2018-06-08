@@ -67,6 +67,10 @@ class Document {
     this.map[this.root.id] = this.root
   }
 
+  setVisualizer(visualizer) {
+    this.visualizer = visualizer;
+  }
+
   addShape(shape, group) {
     this.map[shape.id] = shape
     group = group || this.root;
@@ -88,6 +92,38 @@ class Document {
     return res
   }
 }
+
+/* Start of step 3 */
+
+class Visualizer {
+
+  constructor() {}
+  representation(group) {
+    return 'No visualizer found';
+  }
+}
+
+class TextVisualizer extends Visualizer {
+  constructor() {
+    super()
+  }
+
+  representation(group) {
+    // TODO: implement text representation
+  }
+}
+
+class GraphicVisualizer extends Visualizer {
+  constructor() {
+    super()
+  }
+
+  representation(group) {
+    // TODO: implement graphical representation
+  }
+}
+
+/* End of step 3 */
 
 class ConsoleCommand {
   constructor(){

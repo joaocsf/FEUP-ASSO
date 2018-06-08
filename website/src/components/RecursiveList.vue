@@ -1,11 +1,12 @@
 <template>
   <div class="root elevation-2 white">
     <v-layout>
-    <v-btn outline small icon @click="()=> expanded = !expanded"> 
+    <v-btn outline small icon @click="()=> expanded = !expanded">
       <v-icon> {{expanded? 'keyboard_arrow_down' : 'keyboard_arrow_up'}} </v-icon>
     </v-btn>
     <v-btn outline small @click="clicked">
     {{group.name}}
+    <v-text-field v-if="group==objselected">Ola</v-text-field>
     </v-btn>
     </v-layout>
     <v-layout v-if="expanded">
