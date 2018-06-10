@@ -1,41 +1,81 @@
 <template>
-  <page title="Step1" description="Description">
+  <page title="Step2" description="Description">
     <template slot="description">
-      <div class="text-xs-left">
-        The first step to specify a shape, 
-        in order to achive this a class shape 
-        will be created, where all the future
-        shapes will be derived from.
-      </div>
+        <code>
+          var person = {
+            firstName : "John",
+            lastName  : "Doe",
+            age       : 50,
+            eyeColor  : "blue"
+          };
+
+          document.getElementById("demo").innerHTML =
+          person.firstName + " is " + person.age + " years old, oh so old.";
+        </code>
+      
     </template>
     <template slot="canvas">
+      
+      <v-layout row >
+        <v-flex xs4>
+        <v-btn @click="createCircle"> Create Circle </v-btn>
+        </v-flex>
+        <v-flex xs4>
+        <v-btn @click="createRectangle"> Create Rectangle</v-btn>
+        </v-flex>
+        <v-flex xs4>
+        <v-btn @click="createGroup"> Create Group</v-btn>
+        </v-flex>
+      </v-layout>
+      <recursive-list class="ma-2" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
     </template>
-  </page> 
+  </page>
 </template>
 
 <script>
 // @ is an alias to /src
 import Page from '@/components/utils/Page.vue'
-import {ShapeFactory} from '@/SimpleDraw.js'
+import {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer } from '@/SimpleDraw.js'
+import RecursiveList from '@/components/RecursiveList.vue'
 export default {
   name: 'home',
   components: {
-    Page
+    Page, RecursiveList
   },
   data() {
     return {
+      document: null,
+      console: null,
+      shapeFactory: null,
+      selectedGroup: null,
+      html: null,
+      groupId: 0
     }
   },
   mounted () {
-    console.log(ShapeFactory)
     this.shapeFactory = new ShapeFactory()
+    this.document = new Document()
+    this.document.setVisualizer(new GraphicVisualizer())
   },
   methods: {
+    addShapeToDocument(shape, parent) {
+      this.document.addShape(shape, parent)
+      this.html = this.document.getRepresentation()
+    },
     createRectangle () {
-      this.shapes.push(this.shapeFactory.createRectangle('R' + this.rectId++))
+      let shape  = this.shapeFactory.createRectangle('Rectangle')
+      this.document.addShape(shape, this.selectedGroup)
+      this.html = this.document.getRepresentation()
     },
     createCircle () {
-      this.shapes.push(this.shapeFactory.createCircle('C' + this.circleId++))
+      let shape  = this.shapeFactory.createCircle('Circle')
+      this.document.addShape(shape, this.selectedGroup)
+      this.html = this.document.getRepresentation();
+    },
+    createGroup () {
+      let shape  = this.shapeFactory.createGroup('Group' + this.groupId++)
+      this.document.addShape(shape, this.selectedGroup)
+      this.html = this.document.getRepresentation()
     }
   }
 }
@@ -48,12 +88,6 @@ export default {
 
   code {
     display: block;
-    padding: 0em;
-    min-width: 50%;
-    margin: auto;
-    padding-top: 0em;
-    padding-bottom: 0em;
-    text-align:left;
   }
 </style>
 

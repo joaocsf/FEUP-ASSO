@@ -16,6 +16,9 @@ class Shape {
     return this.id + ": "  + this.name
   }
 
+  draw(context) {
+
+  }
 }
 
 class Rectangle extends Shape {
@@ -24,12 +27,23 @@ class Rectangle extends Shape {
     this.height = height || 1;
     this.width = width || 1;
   }
+
+  draw(context) {
+    context.fillRect(this.x, this.y, this.width, this.height);
+  }
 }
 
 class Circle extends Shape {
   constructor(name, x, y, radius) {
     super(name, x, y);
     this.radius = radius || 1;
+  }
+
+  draw(context) {
+
+    context.beginPath();
+    context.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
+    context.stroke();
   }
 
 }
@@ -58,6 +72,12 @@ class Group extends Shape {
   append(shape) {
     this.shapes.push(shape);
   }
+
+  draw(context) {
+    for(var shape of this.shapes) {
+      shape.draw(context);
+    }
+  }
 }
 
 class Document {
@@ -65,6 +85,7 @@ class Document {
     this.root = new Group('Root')
     this.map = {}
     this.map[this.root.id] = this.root
+    this.visualizer = new TextVisualizer();
   }
 
   setVisualizer(visualizer) {
@@ -77,6 +98,11 @@ class Document {
     group.append(shape);
   }
 
+  getRepresentation() {
+    return this.visualizer.representation(this.root);
+  }
+
+  /* This is needed for Step2. DO NOT DELETE */
   getHtml(group){
     group = group || this.root
     console.log(group)
@@ -91,15 +117,15 @@ class Document {
       res += `<ul> ${content} </ul>`
     return res
   }
+  /* Need for Step2 until here */
 }
 
 /* Start of step 3 */
-
 class Visualizer {
 
   constructor() {}
   representation(group) {
-    return 'No visualizer found';
+    return '<div> No visualizer found </div>';
   }
 }
 
@@ -109,7 +135,18 @@ class TextVisualizer extends Visualizer {
   }
 
   representation(group) {
-    // TODO: implement text representation
+    group = group || this.root
+    console.log(group)
+    let res = `<div> ${group.getName()} </div>`
+    let content = ''
+    for(let shape of group.shapes){
+      let isGroup = shape instanceof Group
+      let subcontent = isGroup ? this.representation(shape) : shape.getName()
+      content += `<li class="${isGroup?'group':''}" > ${subcontent} </li>`
+    }
+    if(content.length > 0)
+      res += `<ul> ${content} </ul>`
+    return res
   }
 }
 
@@ -119,7 +156,10 @@ class GraphicVisualizer extends Visualizer {
   }
 
   representation(group) {
-    // TODO: implement graphical representation
+    let canvas = document.createElement('canvas');
+    let context = canvas.getContext('2d');
+    group.draw(context);
+    return canvas;
   }
 }
 
@@ -157,4 +197,4 @@ class ConsoleCommand {
     return res
   }
 }
-export {ShapeFactory, Document, ConsoleCommand}
+export {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer}
