@@ -1,5 +1,5 @@
 <template>
-  <page title="Step2" description="Description">
+  <page title="Step3" description="Description">
     <template slot="description">
         <code>
           var person = {
@@ -16,18 +16,35 @@
     </template>
     <template slot="canvas">
       
-      <v-layout row >
+      <v-layout row wrap>
         <v-flex xs4>
-        <v-btn @click="createCircle"> Create Circle </v-btn>
+        <v-btn @click="createCircle"> Circle </v-btn>
         </v-flex>
         <v-flex xs4>
-        <v-btn @click="createRectangle"> Create Rectangle</v-btn>
+        <v-btn @click="createRectangle"> Rectangle</v-btn>
         </v-flex>
         <v-flex xs4>
-        <v-btn @click="createGroup"> Create Group</v-btn>
+        <v-btn @click="createGroup"> Group</v-btn>
+        </v-flex>
+        <v-flex>
+          <v-btn @click="() => {switchViews=!switchViews, canvas.onResize()}"> Switch Views </v-btn>
         </v-flex>
       </v-layout>
-      <recursive-list class="ma-2" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
+      <v-layout>
+        <v-flex xs6>
+          <recursive-list class="ma-2 limit-list" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
+        </v-flex>
+        <v-flex xs6>
+          <v-layout column>
+            <v-flex :class="{hidden: switchViews}">
+              <new-canvas class="limit-canvas" ref="canvas"/>
+            </v-flex>
+            <v-flex :class="{hidden: !switchViews}">
+              <div ref="text" class="limit-list text-xs-left"> </div>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+      </v-layout>
     </template>
   </page>
 </template>
@@ -37,45 +54,67 @@
 import Page from '@/components/utils/Page.vue'
 import {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer } from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
+import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
   name: 'home',
   components: {
-    Page, RecursiveList
+    Page, RecursiveList, NewCanvas
   },
   data() {
     return {
+      switchViews: true,
       document: null,
       console: null,
       shapeFactory: null,
       selectedGroup: null,
       html: null,
-      groupId: 0
+      groupId: 0,
+      visualizer: null,
+      canvas: null
     }
   },
   mounted () {
     this.shapeFactory = new ShapeFactory()
     this.document = new Document()
-    this.document.setVisualizer(new GraphicVisualizer())
+
+    this.canvas = this.$refs.canvas
+    let context = this.canvas.getContext()
+    let text = this.$refs.text
+
+    this.visualizer = new GraphicVisualizer(context, this.document)
+    this.visualizer2= new TextVisualizer(text, this.document)
+    // this.document.setVisualizer(new GraphicVisualizer(context, this.document))
   },
   methods: {
+    rnd(){
+      return Math.random() * 200;
+    },
     addShapeToDocument(shape, parent) {
       this.document.addShape(shape, parent)
       this.html = this.document.getRepresentation()
+      this.visualizer.draw()
+      this.visualizer2.draw()
     },
     createRectangle () {
-      let shape  = this.shapeFactory.createRectangle('Rectangle')
+      let shape  = this.shapeFactory.createRectangle('Rectangle', this.rnd(), this.rnd())
       this.document.addShape(shape, this.selectedGroup)
       this.html = this.document.getRepresentation()
+      this.visualizer.draw()
+      this.visualizer2.draw()
     },
     createCircle () {
-      let shape  = this.shapeFactory.createCircle('Circle')
+      let shape  = this.shapeFactory.createCircle('Circle', this.rnd(), this.rnd())
       this.document.addShape(shape, this.selectedGroup)
       this.html = this.document.getRepresentation();
+      this.visualizer.draw()
+      this.visualizer2.draw()
     },
     createGroup () {
       let shape  = this.shapeFactory.createGroup('Group' + this.groupId++)
       this.document.addShape(shape, this.selectedGroup)
       this.html = this.document.getRepresentation()
+      this.visualizer.draw()
+      this.visualizer2.draw()
     }
   }
 }
@@ -88,6 +127,26 @@ export default {
 
   code {
     display: block;
+  }
+
+  .limit-canvas {
+    width: 100%;
+    min-height: 300px;
+    max-height: 300px;
+  }
+
+  li {
+    margin-left: 2em;
+  }
+
+  .limit-list {
+    max-height: 300px;
+    overflow: scroll;
+  }
+
+  .hidden {
+    visibility: hidden;
+    position: absolute;
   }
 </style>
 

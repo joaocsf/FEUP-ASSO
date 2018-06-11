@@ -1,23 +1,19 @@
 let ID = 0
 class Shape {
   constructor(name, x, y) {
-    this.position_x = x || 0;
-    this.position_y = y || 0;
+    this.x = x || 0;
+    this.y = y || 0;
     this.name = name;
     this.id = ID++
   }
 
   translate(x, y) {
-    this.position_x += x || 0;
-    this.position_y += y || 0;
+    this.x += x || 0;
+    this.y += y || 0;
   }
 
   getName(){
     return this.id + ": "  + this.name
-  }
-
-  draw(context) {
-
   }
 }
 
@@ -27,10 +23,6 @@ class Rectangle extends Shape {
     this.height = height || 1;
     this.width = width || 1;
   }
-
-  draw(context) {
-    context.fillRect(this.x, this.y, this.width, this.height);
-  }
 }
 
 class Circle extends Shape {
@@ -38,14 +30,6 @@ class Circle extends Shape {
     super(name, x, y);
     this.radius = radius || 1;
   }
-
-  draw(context) {
-
-    context.beginPath();
-    context.arc(this.x, this.y, this.radius, 0, 2*Math.PI);
-    context.stroke();
-  }
-
 }
 
 class ShapeFactory {
@@ -76,6 +60,16 @@ class Group extends Shape {
   draw(context) {
     for(var shape of this.shapes) {
       shape.draw(context);
+    }
+  }
+
+  foreach(action) {
+    action(this)
+    for(let shape of this.shapes){
+      if(shape instanceof Group)
+        shape.foreach(action)
+      else
+        action(shape)
     }
   }
 }
@@ -127,16 +121,21 @@ class Visualizer {
   representation(group) {
     return '<div> No visualizer found </div>';
   }
+
+  draw() {
+    console.error('Abstract Class')
+  }
 }
 
 class TextVisualizer extends Visualizer {
-  constructor() {
+  constructor(anchor, document) {
     super()
+    this.document = document
+    this.anchor = anchor
   }
 
   representation(group) {
-    group = group || this.root
-    console.log(group)
+    group = group || this.document.root
     let res = `<div> ${group.getName()} </div>`
     let content = ''
     for(let shape of group.shapes){
@@ -148,18 +147,34 @@ class TextVisualizer extends Visualizer {
       res += `<ul> ${content} </ul>`
     return res
   }
+
+  draw() {
+    this.anchor.innerHTML = this.representation()
+  }
 }
 
 class GraphicVisualizer extends Visualizer {
-  constructor() {
+  constructor(context, document) {
     super()
+    this.context = context
+    this.document = document
   }
 
   representation(group) {
-    let canvas = document.createElement('canvas');
-    let context = canvas.getContext('2d');
-    group.draw(context);
+    if(this.context == null) return
+    group.draw(this.context);
     return canvas;
+  }
+
+  draw(){
+    if(this.context == null) return
+    this.document.root.foreach(
+      (shape) => {
+        if(shape instanceof Group) return
+        this.context.fillStyle = "#FF0000"
+        this.context.fillRect(shape.x, shape.y, 10, 10)
+      }
+    )
   }
 }
 
