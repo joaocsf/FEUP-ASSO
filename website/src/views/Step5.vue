@@ -1,5 +1,5 @@
 <template>
-  <page title="Step3" description="Bridge? Strategy?">
+  <page title="Step5" description="Observer">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
@@ -16,10 +16,7 @@
         <v-btn @click="createGroup" small> Group</v-btn>
         </v-flex>
         <v-flex>
-          <v-btn @click="() => {switchViews=!switchViews, canvas.onResize()}" small> Switch Views </v-btn>
-        </v-flex>
-        <v-flex>
-          <v-btn @click="() => {updateViews()}" small> Update Views </v-btn>
+          <v-btn @click="onSwitchViews" small> Switch Views </v-btn>
         </v-flex>
       </v-layout>
       <v-layout row wrap>
@@ -45,7 +42,12 @@
 // @ is an alias to /src
 import Page from '@/components/utils/Page.vue'
 import pages from '@/config/pages.js'
-import {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer } from '@/SimpleDraw.js'
+import {ShapeFactory, 
+        Document, 
+        ConsoleCommand, 
+        GraphicVisualizer, 
+        TextVisualizer, 
+        GraphicVisualizerExtended} from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
@@ -55,8 +57,8 @@ export default {
   },
   data() {
     return {
+      script: pages.script.step5,
       switchViews: true,
-      script: pages.script.step3,
       document: null,
       console: null,
       shapeFactory: null,
@@ -75,8 +77,10 @@ export default {
     let context = this.canvas.getContext()
     let text = this.$refs.text
 
-    this.visualizer = new GraphicVisualizer(context, this.document)
+    this.visualizer = new GraphicVisualizerExtended(context, this.document)
     this.visualizer2= new TextVisualizer(text, this.document)
+    this.document.attach(this.visualizer)
+    this.document.attach(this.visualizer2)
   },
   methods: {
     rnd(){
@@ -86,20 +90,21 @@ export default {
       this.document.addShape(shape, parent)
     },
     createRectangle () {
-      let shape  = this.shapeFactory.createRectangle('Rectangle', this.rnd(), this.rnd())
+      let shape  = this.shapeFactory.createRectangle('Rectangle', this.rnd(), this.rnd(), this.rnd(), this.rnd())
       this.document.addShape(shape, this.selectedGroup)
     },
     createCircle () {
-      let shape  = this.shapeFactory.createCircle('Circle', this.rnd(), this.rnd())
+      let shape  = this.shapeFactory.createCircle('Circle', this.rnd(), this.rnd(), this.rnd())
       this.document.addShape(shape, this.selectedGroup)
     },
     createGroup () {
       let shape  = this.shapeFactory.createGroup('Group' + this.groupId++)
       this.document.addShape(shape, this.selectedGroup)
     },
-    updateViews(){
+    onSwitchViews() {
+      this.switchViews = !this.switchViews
+      this.canvas.onResize()
       this.visualizer.draw()
-      this.visualizer2.draw()
     }
   }
 }
@@ -110,11 +115,10 @@ export default {
     text-align: left;
   }
 
+
   li {
     margin-left: 2em;
   }
-
-
 
   .hidden {
     visibility: hidden;

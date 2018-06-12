@@ -20,6 +20,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -37,4 +38,23 @@ export default {
     }
   }
 }
+
+.limit-list {
+  min-height: 200px;
+  max-height: 200px;
+  overflow: scroll;
+}
+
+.limit-canvas {
+  width: 100%;
+  min-height: 300px;
+  max-height: 300px;
+  overflow: scroll;
+}
+
+code{
+  box-shadow: 0 0 0 0 !important;
+  border-radius: 0 !important;
+}
+@import 'assets/prism.css';
 </style>

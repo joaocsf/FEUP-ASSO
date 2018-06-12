@@ -1,5 +1,5 @@
 <template>
-  <page title="Step3" description="Bridge? Strategy?">
+  <page title="Step4" description="Visitor">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
@@ -45,7 +45,12 @@
 // @ is an alias to /src
 import Page from '@/components/utils/Page.vue'
 import pages from '@/config/pages.js'
-import {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer } from '@/SimpleDraw.js'
+import {ShapeFactory, 
+        Document, 
+        ConsoleCommand, 
+        GraphicVisualizer, 
+        TextVisualizer, 
+        GraphicVisualizerExtended} from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
@@ -55,8 +60,8 @@ export default {
   },
   data() {
     return {
+      script: pages.script.step4,
       switchViews: true,
-      script: pages.script.step3,
       document: null,
       console: null,
       shapeFactory: null,
@@ -75,7 +80,7 @@ export default {
     let context = this.canvas.getContext()
     let text = this.$refs.text
 
-    this.visualizer = new GraphicVisualizer(context, this.document)
+    this.visualizer = new GraphicVisualizerExtended(context, this.document)
     this.visualizer2= new TextVisualizer(text, this.document)
   },
   methods: {
@@ -86,11 +91,11 @@ export default {
       this.document.addShape(shape, parent)
     },
     createRectangle () {
-      let shape  = this.shapeFactory.createRectangle('Rectangle', this.rnd(), this.rnd())
+      let shape  = this.shapeFactory.createRectangle('Rectangle', this.rnd(), this.rnd(), this.rnd(), this.rnd())
       this.document.addShape(shape, this.selectedGroup)
     },
     createCircle () {
-      let shape  = this.shapeFactory.createCircle('Circle', this.rnd(), this.rnd())
+      let shape  = this.shapeFactory.createCircle('Circle', this.rnd(), this.rnd(), this.rnd())
       this.document.addShape(shape, this.selectedGroup)
     },
     createGroup () {
@@ -113,8 +118,6 @@ export default {
   li {
     margin-left: 2em;
   }
-
-
 
   .hidden {
     visibility: hidden;

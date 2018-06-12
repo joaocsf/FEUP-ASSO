@@ -15,6 +15,11 @@ class Shape {
   getName(){
     return this.id + ": "  + this.name
   }
+
+  /*Step 4 Visitor*/
+  accept(visitor){
+    visitor.visit(this)
+  }
 }
 
 class Rectangle extends Shape {
@@ -23,12 +28,22 @@ class Rectangle extends Shape {
     this.height = height || 1;
     this.width = width || 1;
   }
+
+  /*Step 4 Visitor*/
+  accept(visitor){
+    visitor.visitRectangle(this)
+  }
 }
 
 class Circle extends Shape {
   constructor(name, x, y, radius) {
     super(name, x, y);
     this.radius = radius || 1;
+  }
+
+  /*Step 4 Visitor*/
+  accept(visitor){
+    visitor.visitCircle(this)
   }
 }
 
@@ -57,12 +72,6 @@ class Group extends Shape {
     this.shapes.push(shape);
   }
 
-  draw(context) {
-    for(var shape of this.shapes) {
-      shape.draw(context);
-    }
-  }
-
   foreach(action) {
     action(this)
     for(let shape of this.shapes){
@@ -72,6 +81,11 @@ class Group extends Shape {
         action(shape)
     }
   }
+  
+  /*Step 4 Visitor*/
+  accept(visitor){
+    visitor.visitGroup(this)
+  }
 }
 
 class Document {
@@ -79,47 +93,36 @@ class Document {
     this.root = new Group('Root')
     this.map = {}
     this.map[this.root.id] = this.root
-    this.visualizer = new TextVisualizer();
+
+    /* Step 5 Observer */
+    this.listeners = []
   }
 
-  setVisualizer(visualizer) {
-    this.visualizer = visualizer;
+  attach(observer){
+    this.listeners.push(observer)
+  }
+
+  notify(){
+    for(let listener of this.listeners)
+      listener.update()
   }
 
   addShape(shape, group) {
     this.map[shape.id] = shape
-    group = group || this.root;
-    group.append(shape);
-  }
-
-  getRepresentation() {
-    return this.visualizer.representation(this.root);
-  }
-
-  /* This is needed for Step2. DO NOT DELETE */
-  getHtml(group){
     group = group || this.root
-    console.log(group)
-    let res = `<div> ${group.getName()} </div>`
-    let content = ''
-    for(let shape of group.shapes){
-      let isGroup = shape instanceof Group
-      let subcontent = isGroup ? this.getHtml(shape) : shape.getName()
-      content += `<li class="${isGroup?'group':''}" > ${subcontent} </li>`
-    }
-    if(content.length > 0)
-      res += `<ul> ${content} </ul>`
-    return res
+    group.append(shape)
+    this.notify()
   }
-  /* Need for Step2 until here */
 }
 
 /* Start of step 3 */
 class Visualizer {
 
   constructor() {}
-  representation(group) {
-    return '<div> No visualizer found </div>';
+
+  /*Step 5 Observer */
+  update(){
+    this.draw()
   }
 
   draw() {
@@ -160,12 +163,6 @@ class GraphicVisualizer extends Visualizer {
     this.document = document
   }
 
-  representation(group) {
-    if(this.context == null) return
-    group.draw(this.context);
-    return canvas;
-  }
-
   draw(){
     if(this.context == null) return
     this.document.root.foreach(
@@ -179,6 +176,40 @@ class GraphicVisualizer extends Visualizer {
 }
 
 /* End of step 3 */
+
+/* Start of step 4 */
+
+class GraphicVisualizerExtended extends Visualizer {
+  constructor(context, document) {
+    super()
+    this.context = context
+    this.document = document
+  }
+
+  draw(){
+    if(this.context == null) return
+    this.document.root.foreach(
+      (shape) => {
+        shape.accept(this)
+      }
+    )
+  }
+
+  visitRectangle(shape){
+    this.context.fillStyle="#"+((1<<24)*Math.random()|0).toString(16)
+    this.context.fillRect(shape.x,shape.y,shape.width, shape.height)
+  }
+
+  visitCircle(shape){
+    this.context.fillStyle="#"+((1<<24)*Math.random()|0).toString(16)
+    this.context.beginPath()
+    this.context.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI, false);
+    this.context.fill()
+  }
+
+  visitGroup(shape){
+  }
+}
 
 class ConsoleCommand {
   constructor(){
@@ -212,4 +243,4 @@ class ConsoleCommand {
     return res
   }
 }
-export {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer}
+export {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer, GraphicVisualizerExtended}

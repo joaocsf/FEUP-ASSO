@@ -1,30 +1,19 @@
 <template>
-  <page title="Step2" description="Description">
+  <page title="Step2" description="Composite">
     <template slot="description">
-        <code>
-          var person = {
-            firstName : "John",
-            lastName  : "Doe",
-            age       : 50,
-            eyeColor  : "blue"
-          };
-
-          document.getElementById("demo").innerHTML =
-          person.firstName + " is " + person.age + " years old, oh so old.";
-        </code>
-      
+      <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
     <template slot="canvas">
       
       <v-layout row >
         <v-flex xs4>
-        <v-btn @click="createCircle"> Create Circle </v-btn>
+        <v-btn @click="createCircle" small> Circle </v-btn>
         </v-flex>
         <v-flex xs4>
-        <v-btn @click="createRectangle"> Create Rectangle</v-btn>
+        <v-btn @click="createRectangle" small> Rectangle</v-btn>
         </v-flex>
         <v-flex xs4>
-        <v-btn @click="createGroup"> Create Group</v-btn>
+        <v-btn @click="createGroup" small> Group</v-btn>
         </v-flex>
       </v-layout>
       <recursive-list class="ma-2" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
@@ -35,6 +24,7 @@
 <script>
 // @ is an alias to /src
 import Page from '@/components/utils/Page.vue'
+import pages from '@/config/pages.js'
 import {ShapeFactory, Document, ConsoleCommand} from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 export default {
@@ -46,9 +36,9 @@ export default {
     return {
       document: null,
       console: null,
+      script: pages.script.step2,
       shapeFactory: null,
       selectedGroup: null,
-      html: null,
       groupId: 0
     }
   },
@@ -59,22 +49,18 @@ export default {
   methods: {
     addShapeToDocument(shape, parent) {
       this.document.addShape(shape, parent)
-      this.html = this.document.getHtml()
     },
     createRectangle () {
       let shape  = this.shapeFactory.createRectangle('Rectangle')
       this.document.addShape(shape, this.selectedGroup)
-      this.html = this.document.getHtml()
     },
     createCircle () {
       let shape  = this.shapeFactory.createCircle('Circle')
       this.document.addShape(shape, this.selectedGroup)
-      this.html = this.document.getHtml()
     },
     createGroup () {
       let shape  = this.shapeFactory.createGroup('Group' + this.groupId++)
       this.document.addShape(shape, this.selectedGroup)
-      this.html = this.document.getHtml()
     }
   }
 }
@@ -85,8 +71,5 @@ export default {
     text-align: left;
   }
 
-  code {
-    display: block;
-  }
 </style>
 

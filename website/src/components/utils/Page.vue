@@ -6,7 +6,7 @@
         <h1>{{title}}</h1>
         </v-card-title>
         <v-card-text>
-          <div> {{description}} </div>
+          <div class="ml-3 text-xs-left headline"> {{description}} </div>
           <div class="mt-3">
           <v-layout row wrap>
             <v-flex xs12 md6>
