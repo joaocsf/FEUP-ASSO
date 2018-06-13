@@ -12,7 +12,8 @@ export default {
   script: {
     step1: 
 `
-The first step to specify a shape, in order to achive this a class shape will be created, where all the future shapes will be derived from.
+The first step was to specify what a shape is, in order to achive this a class Shape was created. All future shape types will be derived from this base class. A shape has a name and a (x,y) position as well as an ID (globally incremental).
+
 
 \`\`\`javascript
 class Shape {
@@ -29,7 +30,7 @@ class Shape {
 }
 \`\`\`
 
-In this case The two main examples will be Rectangle and Circle.
+For this example we specified 2 differente shapes, Circle and Rectangle.
 
 \`\`\`javascript
 class Rectangle extends Shape {
@@ -61,12 +62,16 @@ class ShapeFactory {
   }
 }
 \`\`\`
+
+### Test Demo
+
+* Click on one of the buttons 'Circle' or 'Rectangle' to add new shapes.
 `,
     step2:
 `
-The Composite Design Pattern is as useful pattern when there is a need to compose similar objects in a hierarchy. It is useful to implement groups in graphics applications like this one, lets see how this is implemented.
+The Composite Design Pattern is very useful when there is a need to compose similar objects in a hierarchy. In our context we used this pattern to define groups of shapes.
 
-First a class Group that extends the other shapes is created and it encapsulates objects of type shape.
+First, a class Group that extends Shape is created and encapsulates objects of type shape, including other groups.
 \`\`\`javascript
 class Group extends Shape {
   
@@ -81,8 +86,13 @@ class Group extends Shape {
 }
 \`\`\`
 
-With this approach we can have a structured hierarchy with groups that contain groups, rectangles or circles!
-On the left there is a small demo demonstrating the heirarchy created internally
+With this pattern we can associate shapes with other shapes. For now this isn't really useful, but later on when we implement translation it will be really useful to move multiple shapes at once.
+
+### Test Demo
+
+* Click on the 'Circle', 'Rectangle' and 'Group' buttons to add a new shape.
+* Click on a group name to select it. Afterwards all shapes you add will be added to the selected group.
+
 `,
     step3:
 `

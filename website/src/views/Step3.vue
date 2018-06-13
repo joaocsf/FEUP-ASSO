@@ -1,5 +1,5 @@
 <template>
-  <page title="Step3" description="Bridge? Strategy?">
+  <page title="Step3" description="Strategy">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
