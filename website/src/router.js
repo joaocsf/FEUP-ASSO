@@ -9,6 +9,7 @@ import Step2 from './views/Step2.vue'
 import Step3 from './views/Step3.vue'
 import Step4 from './views/Step4.vue'
 import Step5 from './views/Step5.vue'
+import Step6 from './views/Step6.vue'
 
 Vue.use(Router)
 
@@ -58,6 +59,11 @@ export default new Router({
       path: '/step5',
       name: 'step5',
       component: Step5
+    },
+    {
+      path: '/step6',
+      name: 'step6',
+      component: Step6
     }
   ]
 })

@@ -6,7 +6,8 @@ export default {
     {title: 'Step2', icon: 'label_important', route: 'step2'},
     {title: 'Step3', icon: 'label_important', route: 'step3'},
     {title: 'Step4', icon: 'label_important', route: 'step4'},
-    {title: 'Step5', icon: 'label_important', route: 'step5'}
+    {title: 'Step5', icon: 'label_important', route: 'step5'},
+    {title: 'Step6', icon: 'label_important', route: 'step6'}
   ],
 
   script: {

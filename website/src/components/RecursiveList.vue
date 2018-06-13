@@ -6,14 +6,17 @@
     </v-btn>
     <v-btn outline small @click="clicked">
     {{group.name}}
-    <v-text-field v-if="group==objselected">Ola</v-text-field>
     </v-btn>
+    <v-btn v-if="action" @click="() => {action(group)}" > > </v-btn> 
     </v-layout>
     <v-layout v-if="expanded">
       <v-flex class="ml-5 mr-1 mb-2">
         <template v-for="(shape, index) in group.shapes">
-          <div v-if="shape.constructor.name != 'Group'" :key="index"> {{shape.name}} </div>
-          <recursive-list v-else :group="shape" @objselected="objselected" :key="index"/> 
+          <div v-if="shape.constructor.name != 'Group'" :key="index"> 
+            {{shape.name}} 
+            <v-btn v-if="action && shape" @click="() => {action(shape)}" > > </v-btn>
+          </div>
+          <recursive-list v-else :action="action" :group="shape" @objselected="objselected" :key="index"/> 
         </template>
       </v-flex>
     </v-layout>
@@ -22,7 +25,7 @@
 
 <script>
 export default {
-  props: ['group'],
+  props: ['group', 'action'],
   name: 'RecursiveList',
   data() {
     return {

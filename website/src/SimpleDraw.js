@@ -72,6 +72,10 @@ class Group extends Shape {
     this.shapes.push(shape);
   }
 
+  translate(x, y) {
+    this.foreach(shape => {if(shape !== this) shape.translate(x,y)})
+  }
+
   foreach(action) {
     action(this)
     for(let shape of this.shapes){
@@ -96,10 +100,25 @@ class Document {
 
     /* Step 5 Observer */
     this.listeners = []
+
+    /* Step 6 Command */
+    this.commands = []
   }
 
   attach(observer){
     this.listeners.push(observer)
+  }
+
+  addCommand(command){
+    command.execute()
+    this.commands.push(command)
+    this.notify()
+  }
+
+  undoCommand(){
+    if(this.commands.length == 0) return;
+    this.commands.pop().unexecute()
+    this.notify()
   }
 
   notify(){
@@ -187,6 +206,8 @@ class GraphicVisualizerExtended extends Visualizer {
   }
 
   draw(){
+    this.context.fillStyle="#000000"
+    this.context.fillRect(0,0,2000,2000)
     if(this.context == null) return
     this.document.root.foreach(
       (shape) => {
@@ -210,6 +231,36 @@ class GraphicVisualizerExtended extends Visualizer {
   visitGroup(shape){
   }
 }
+
+/*Step 6*/
+
+class Command {
+  execute(){
+    console.error('Abstract Class')
+  }
+  unexecute(){
+    console.error('Abstract Class')
+  }
+}
+
+class MoveCommand extends Command {
+  constructor(shape, x, y){
+    super()
+    this.shape = shape
+    this.x = x
+    this.y = y
+  }
+
+  execute(){
+    this.shape.translate(this.x,this.y)
+  }
+  unexecute(){
+    this.shape.translate(-this.x,-this.y)
+  }
+}
+
+
+/*End of Step 6*/
 
 class ConsoleCommand {
   constructor(){
@@ -243,4 +294,4 @@ class ConsoleCommand {
     return res
   }
 }
-export {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer, GraphicVisualizerExtended}
+export {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer, GraphicVisualizerExtended, MoveCommand}
