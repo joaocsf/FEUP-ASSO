@@ -37,26 +37,39 @@
         </v-card-title>
         <v-card-text>
           <!-- To Remove -->
-          <div class="headline"> 
-            Useful links - (To Remove in final version)
-          </div>
 
-           <v-stepper vertical>
-            <v-stepper-step v-for="link in links" :complete="complete">        
-              <v-btn flat color="blue" :href="link.url"> {{link.desc}} </v-btn>             
-            </v-stepper-step>
-          </v-stepper>
+          <div class="elevation-2 mt-4"> 
+            <div class="headline"> 
+              Useful links - (To Remove in final version)
+            </div>
+
+            <v-layout column wrap class="text-xs-left">
+            <v-flex v-for="(link,i) in links" :complete="complete" :key="i">        
+              <div class="ma-2">
+                <v-btn flat small color="blue" class="text-xs-left ma-0 pa-0 " :href="link.url"> 
+                  <v-icon color="blue darken-2"> check_circle </v-icon>
+                  <span class="subheading ml-2"> {{link.desc}} </span>
+                </v-btn>             
+                <v-divider class="mt-1 mb-1"></v-divider>
+              </div>
+            </v-flex>
+            </v-layout>
+          </div>
           
 
-          <div class="headline"> 
-            Goals
-          </div>
+          <div class="elevation-2 mt-4"> 
+            <div class="headline"> Goals </div>
           
-          <v-stepper vertical>
-            <v-stepper-step v-for="goal in goals" :complete="complete">
-              <div class="title"> {{goal}} </div>
-            </v-stepper-step>
-          </v-stepper>
+            <v-layout column wrap class="text-xs-left">
+              <v-flex v-for="(goal,i) in goals" :complete="complete" :key="i">
+                <div class="ma-2">
+                <v-icon color="blue darken-2"> check_circle </v-icon> <span class="subheading"> {{goal}} </span>
+                <v-divider class="mt-1 mb-1"></v-divider>
+                </div>
+              </v-flex>
+            </v-layout>
+
+          </div>
 
         </v-card-text>
         <v-card-actions>

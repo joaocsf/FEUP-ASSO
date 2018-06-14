@@ -95,9 +95,24 @@ class ShapeFactory {
 `,
     step2:
 `
+### Problem
+
+<br\>
+
+*  SimpleDraw must aggregate graphical objects.
+
+<br\>
+
+### Solution
+
+<br\>
+
 The Composite Design Pattern is very useful when there is a need to compose similar objects in a hierarchy. In our context we used this pattern to define groups of shapes.
 
 First, a class Group that extends Shape is created and encapsulates objects of type shape, including other groups.
+
+<br\>
+
 \`\`\`javascript
 class Group extends Shape {
   
@@ -112,9 +127,15 @@ class Group extends Shape {
 }
 \`\`\`
 
+<br\>
+
 With this pattern we can associate shapes with other shapes. For now this isn't really useful, but later on when we implement translation it will be really useful to move multiple shapes at once.
 
+<br\>
+
 ### Test Demo
+
+<br\>
 
 * Click on the 'Circle', 'Rectangle' and 'Group' buttons to add a new shape.
 * Click on a group name to select it. Afterwards all shapes you add will be added to the selected group.
@@ -122,17 +143,51 @@ With this pattern we can associate shapes with other shapes. For now this isn't 
 `,
     step3:
 `
+
 # TO-DO STEP 3
+
+### Problem
+
+<br/>
+
+* A document must be viewed in different ways.
+
+<br/>
+
+### Solution
+
+<br/>
+
+<br/>
+
+### Test Demo
+
+
 `,
     step4:
 `
-In the previous step we could represent different ways of visualizing the document, it worked great for the text representation because each shape has a name associated to it, but not so well in the graphic representation, since we don't know which shape is which we guessed everything was a square.
+### Problem
 
-The Visitor Design Pattern can help us deal with that, with this design pattern we can make each different shape visit a method crafted specifically to handle each shape type. 
+<br/>
+
+* A document must be viewed in different ways.
+
+<br/>
+
+### Solution
+
+<br/>
+
+In the previous step we could represent different ways of visualizing the document, it worked great for the text representation because each shape has a name associated to it, but not so well in the graphic representation, since we don't know which shape is, we guessed everything was a square.
+
+The Visitor Design Pattern can help us deal with that, with this design pattern we can make each shape visit a method, crafted specifically to handle each shape type. 
 
 The Visitor Design Pattern, when applied to this specific use and language, can be specified in the following way.
 
 Each shape must accept a visitor and call the appropriate method. So a new method is added to the base class
+
+<br/>
+
 \`\`\`javascript
 class Shape {
   (...)
@@ -142,7 +197,11 @@ class Shape {
 }
 \`\`\`
 
+<br/>
+
 And each subclass must overwrite the method and call the appropriate Visitor's method.
+
+<br/>
 
 \`\`\`javascript
 class Rectangle extends Shape {
@@ -165,7 +224,12 @@ class Group extends Shape {
 }
 \`\`\`
 
+<br/>
+
 The Visitor interface is responsible to receive all the calls from the shapes, in order to handle that in javascript each method needs to be named differently.
+
+<br/>
+
 \`\`\`javascript
 class GraphicVisualizerExtended extends Visualizer {
   (...)
@@ -198,10 +262,36 @@ class GraphicVisualizerExtended extends Visualizer {
   }
 }
 \`\`\`
+
+<br/>
+
 Each \`visit{ShapeName}\` Method is responsible to handle each shape. The draw method now simply calls the accept method of each shape to call the appropriate Visitor's method.
+
+<br/>
+
+### Test Demo
+
+<br/>
+
+* Add Circles and Rectangles
+* When you press the switch view and then the Button Update Views the shapes should appear correctly!
+
+
 `,
     step5:
 `
+### Problem
+
+<br/>
+
+* A document must be viewed in different ways.
+
+<br/>
+
+### Solution
+
+<br/>
+
 Up until now the additions of the shapes weren't updating automatically, this is important to improve the user experience and handle more complex behaviours so let's remove that annoying button and implement a new pattern!
 
 The Observer Design pattern informs its observers of a change in the state, there are various ways of implementing this pattern but in this case, we keep it simple and since each visualizer contains the current document we don't need to pass it in the update method.
@@ -209,6 +299,9 @@ The Observer Design pattern informs its observers of a change in the state, ther
 To implement this pattern we need to think about where the changes occur and what we should update, in this case when the Document(Notifier) changes its internal state it should notify the visualizers(Observers) to draw accordingly.
 
 The document must handle all the listeners interested in receiving updates and latter notify them.
+
+<br/>
+
 \`\`\`javascript
 class Document {
   (...)
@@ -229,7 +322,11 @@ class Document {
 }
 \`\`\`
 
+<br/>
+
 Then in the base class Visualizer, we add the update method which is called to notify the observer, in this context the only update we need to do is to draw according to the current state of the document.
+
+<br/>
 
 \`\`\`javascript
 class Visualizer {
@@ -244,10 +341,13 @@ class Visualizer {
 }
 \`\`\`
 
-In our code, we just need to associate the visualizers as observers of the document.
+<br/>
+
+Finally in our code, we just need to associate the visualizers as observers of the document.
+
+<br/>
 
 \`\`\`javascript
-
 let document = new Document()
 (...)
 let visualizer = new GraphicVisualizerExtended(context, document)
@@ -256,21 +356,79 @@ document.attach(visualizer)
 document.attach(visualizer2)
 \`\`\`
 
-Now when creating new objects the visualizers should update accordingly.
+<br/>
+
+### Test Demo
+
+<br/>
+
+* Now when creating new objects the visualizers should update accordingly.
+
 `,
     step6:
 `
 # TO-DO STEP 6
+### Problem
+
+<br/>
+
+* SimpleDraw must support Undo/ReDo of operations to the objects.
+
+<br/>
+
+### Solution
+
+
+### Test Demo
+<br/>
+
+* Topic
+
+<br/>
 `,
   step7:
   `
-  # TO-DO STEP 7
-  visitor to export document
-  `,
+# TO-DO STEP 7
+visitor to export document
+### Problem
+
+<br/>
+
+* SimpleDraw must be able to write the document using different formats (text, xml, binary, etc).
+
+<br/>
+
+### Solution
+
+
+### Test Demo
+<br/>
+
+* Topic
+
+<br/>
+`,
   step8:
-  `
-  # TO-DO STEP 8
-  interpretor to import document
-  `,
+`
+# TO-DO STEP 8
+interpretor to import document
+### Problem
+
+<br/>
+
+* SimpleDraw must be able to read the document using different formats (text, xml, binary, etc).
+
+<br/>
+
+### Solution
+
+
+### Test Demo
+<br/>
+
+* Topic
+
+<br/>
+`,
   }
 }
