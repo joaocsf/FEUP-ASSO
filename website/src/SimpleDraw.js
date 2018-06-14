@@ -354,15 +354,15 @@ class XMLExporter extends Exporter {
         content += ` ${s.accept(this)} `
       }
 
-      return `<group id=${shape.id} name=${shape.name} x=${shape.x | 0} y=${shape.y | 0}> ${content} </group>`
+      return `<group id='${shape.id}' name='${shape.name}' x='${shape.x | 0}' y='${shape.y | 0}'> ${content} </group>`
     }
 
     visitCircle(shape){
-      return `<circle id=${shape.id} name=${shape.name} x=${shape.x | 0} y=${shape.y | 0} radius=${shape.radius | 0}>  </circle>`
+      return `<circle id='${shape.id}' name='${shape.name}' x='${shape.x | 0}' y='${shape.y | 0}' radius='${shape.radius | 0}'>  </circle>`
     }
 
     visitRectangle(shape){
-      return `<rectangle id=${shape.id} name=${shape.name} x=${shape.x | 0} y=${shape.y | 0} width=${shape.width | 0} height=${shape.height | 0}> ${shape.name} </rectangle>`
+      return `<rectangle id='${shape.id}' name='${shape.name}' x='${shape.x | 0}' y='${shape.y | 0}' width='${shape.width | 0}' height='${shape.height | 0}'>  </rectangle>`
     }
 }
 
@@ -401,7 +401,6 @@ class Expression {
     this.file = file
     this.factory = factory
     this.document = document
-    this.tokenizer = new Tokenizer(file)
   }
 
   interpret(){
@@ -412,7 +411,7 @@ class Expression {
 class SimpleInterpreter extends Expression{
   constructor(file, factory, document){
     super(file, factory, document)
-
+    this.tokenizer = new Tokenizer(file)
     this.groups = []
   }
   
@@ -426,7 +425,7 @@ class SimpleInterpreter extends Expression{
   }
 
 
-  parse(){
+  interpret(){
     if(this.g())
       this.document.setRoot(this.groups.pop())
     else
@@ -528,32 +527,107 @@ class SimpleInterpreter extends Expression{
 
 }
 
+
 class XMLInterpreter extends Expression{
   constructor(file, factory, document){
     super(file, factory, document)
     this.groups = []
+    this.xmlDoc = new DOMParser().parseFromString(this.file,"text/xml");
 
-    this.xmlDoc = new DOMParser().parseFromString(file,"text/xml");
-    
   }
 
-  parse(){
-    console.log('xmlDoc',this.xmlDoc)
+  appendShape(shape){
+    if(this.groups.length == 0)
+      return
+    else {
+      this.groups[this.groups.length - 1].append(shape)
+    }
   }
 
 
+
+  interpret(){
+    if(this.g(this.xmlDoc.documentElement))
+      this.document.setRoot(this.groups.pop())
+    else
+      return false
+  
+    return true
+  }
+
+  g(root){
+    if(root.nodeName == 'group'){
+      let id = root.getAttribute('id') | 0
+      let name = root.getAttribute('name')
+      let x =  root.getAttribute('x') | 0
+      let y =  root.getAttribute('y') | 0
+
+      let group = this.factory.createGroup(name, x, y)
+      group.id = id
+      this.appendShape(group)
+      this.groups.push(group)
+
+      if(this.f(root.childNodes)){
+        if(this.groups.length > 1)
+        this.groups.pop()
+      
+        return true
+      }
+    }
+
+    return false
+
+  }
+
+  c(root){    
+    if(root.nodeName == 'circle'){
+      let id = root.getAttribute('id') | 0
+      let name = root.getAttribute('name')
+      let x =  root.getAttribute('x') | 0
+      let y =  root.getAttribute('y') | 0
+      let radius = root.getAttribute('radius') | 0
+
+      let circle = this.factory.createCircle(name, x, y, radius)
+      circle.id = id
+      this.appendShape(circle)
+
+      return true
+    }
+        
+    return false
+  }
+
+  r(root){   
+    if(root.nodeName == 'rectangle'){
+      let id = root.getAttribute('id') | 0
+      let name = root.getAttribute('name')
+      let x =  root.getAttribute('x') | 0
+      let y =  root.getAttribute('y') | 0
+      let width = root.getAttribute('width') | 0
+      let height = root.getAttribute('height') | 0
+      let rectangle = this.factory.createRectangle(name, x, y, width, height)
+      rectangle.id = id
+      this.appendShape(rectangle)
+
+      return true
+    }
+
+    return false
+  }
+
+
+  f(nodes){
+    for(let node of nodes) {
+      if(node.nodeType == 1) // if XML element
+        if(!(this.c(node) || this.r(node) || this.g(node)))
+          return false
+    }
+
+    return true
+  }
 
 }
 
-/*
-<group id=0 name=Root x=0 y=0>  
-  <circle id=1 name=Circle x=85 y=162 radius=124>  </circle>  
-  <group id=2 name=Group0 x=0 y=0>
-    <rectangle id=3 name=Rectangle x=34 y=63 width=86 height=34> Rectangle </rectangle>  
-  </group>  
-</group>
-
-*/
 
 
 /*End step 8*/

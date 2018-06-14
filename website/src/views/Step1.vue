@@ -2,6 +2,7 @@
   <step title="Step1" description="Factory">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
+      <v-btn outline color="blue" to="/step2"> Continue to step 2 </v-btn>
     </template>
     <template slot="canvas">
       <v-layout row>

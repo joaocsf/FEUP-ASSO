@@ -1,13 +1,13 @@
 export default {
   steps: [
-    {title: 'Step1', icon: 'label_important', route: 'step1'},
-    {title: 'Step2', icon: 'label_important', route: 'step2'},
-    {title: 'Step3', icon: 'label_important', route: 'step3'},
-    {title: 'Step4', icon: 'label_important', route: 'step4'},
-    {title: 'Step5', icon: 'label_important', route: 'step5'},
-    {title: 'Step6', icon: 'label_important', route: 'step6'},
-    {title: 'Step7', icon: 'label_important', route: 'step7'},
-    {title: 'Step8', icon: 'label_important', route: 'step8'},
+    {title: 'Step 1', icon: 'label_important', route: 'step1'},
+    {title: 'Step 2', icon: 'label_important', route: 'step2'},
+    {title: 'Step 3', icon: 'label_important', route: 'step3'},
+    {title: 'Step 4', icon: 'label_important', route: 'step4'},
+    {title: 'Step 5', icon: 'label_important', route: 'step5'},
+    {title: 'Step 6', icon: 'label_important', route: 'step6'},
+    {title: 'Step 7', icon: 'label_important', route: 'step7'},
+    {title: 'Step 8', icon: 'label_important', route: 'step8'},
   ],
 
   script: {

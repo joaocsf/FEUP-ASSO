@@ -1,7 +1,8 @@
 <template>
-  <step title="Step7" description="Exporter(Visitor again)">
+  <step title="Step7" description="Exporter (And it's a Visitor again) ">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
+      <v-btn outline color="blue" to="/step8"> Continue to step 8 </v-btn>
     </template>
     <template slot="canvas">
 
@@ -61,17 +62,17 @@
 
       <v-layout row justify-center>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(-1,0)">
+          <v-btn small fab @click="() => moveShape(-10,0)">
             <v-icon> keyboard_arrow_left </v-icon>
           </v-btn>
         </v-flex>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(0,1)">
+          <v-btn small fab @click="() => moveShape(0,10)">
             <v-icon> keyboard_arrow_down </v-icon>
           </v-btn>
         </v-flex>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(1,0)">
+          <v-btn small fab @click="() => moveShape(10,0)">
             <v-icon> keyboard_arrow_right </v-icon>
           </v-btn>
         </v-flex>
@@ -148,7 +149,7 @@ export default {
   },
   data() {
     return {
-      script: steps.script.step6,
+      script: steps.script.step7,
       switchViews: false,
       document: null,
       console: null,

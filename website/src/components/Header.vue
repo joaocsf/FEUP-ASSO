@@ -12,12 +12,12 @@
       </v-toolbar>
       <v-divider></v-divider>
       <v-list dense class="pt-0">
-        <v-list-tile v-for="step in steps" :key="step.title" @click="loadPage(step.route)">
+        <v-list-tile :color="step.color" v-for="step in steps" :key="step.title" @click="loadPage(step.route)">
           <v-list-tile-action>
             <v-icon> {{step.icon}} </v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title> {{step.title}} </v-list-tile-title>
+            <v-list-tile-title > {{step.title}} </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -34,20 +34,31 @@
 </template>
 
 <script>
-import steps from '@/config/steps.js'
+import stepsObj from '@/config/steps.js'
+
 export default {
   data () {
     return {
       enable: true,
       clipped: false,
-      steps: steps.steps
+      stepAux: stepsObj,
     }
   },
   methods: {
     loadPage (route) {
       this.$router.push(route)
     }
-  }
+  },
+  computed: {
+    steps: function () {
+      let steps = this.stepAux.steps
+      for(let step of steps) {
+        step['color'] = (this.$route.name == step.route) ? 'blue' : 'black'
+      }
+
+      return steps
+    }
+  },
 }
 </script>
 

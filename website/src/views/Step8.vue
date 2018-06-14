@@ -2,6 +2,7 @@
   <step title="Step8" description="Importer">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
+      <v-btn outline color="blue" to="/"> Go back to home </v-btn>
     </template>
     <template slot="canvas">
 
@@ -74,17 +75,17 @@
 
       <v-layout row justify-center>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(-1,0)">
+          <v-btn small fab @click="() => moveShape(-10,0)">
             <v-icon> keyboard_arrow_left </v-icon>
           </v-btn>
         </v-flex>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(0,1)">
+          <v-btn small fab @click="() => moveShape(0,10)">
             <v-icon> keyboard_arrow_down </v-icon>
           </v-btn>
         </v-flex>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(1,0)">
+          <v-btn small fab @click="() => moveShape(10,0)">
             <v-icon> keyboard_arrow_right </v-icon>
           </v-btn>
         </v-flex>
@@ -178,7 +179,7 @@ export default {
   },
   data() {
     return {
-      script: steps.script.step6,
+      script: steps.script.step8,
       switchViews: false,
       document: null,
       console: null,
@@ -264,10 +265,10 @@ export default {
       this.toggleDialog = true
     },
     importSimple(){
-      new SimpleInterpreter(this.importedDocument, this.shapeFactory, this.document).parse()
+      new SimpleInterpreter(this.importedDocument, this.shapeFactory, this.document).interpret()
     },
     importXML(){
-      new XMLInterpreter(this.importedDocument, this.shapeFactory, this.document).parse()
+      new XMLInterpreter(this.importedDocument, this.shapeFactory, this.document).interpret()
     },
     copyToClipboard(){
       

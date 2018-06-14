@@ -2,6 +2,7 @@
   <step title="Step6" description="Command">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
+      <v-btn outline color="blue" to="/step7"> Continue to step 7 </v-btn>
     </template>
     <template slot="canvas">
 
@@ -25,7 +26,7 @@
 
       <v-layout row justify-center>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(0,-1)">
+          <v-btn small fab @click="() => moveShape(0,-10)">
             <v-icon> keyboard_arrow_up </v-icon>
           </v-btn>
         </v-flex>
@@ -33,17 +34,17 @@
 
       <v-layout row justify-center>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(-1,0)">
+          <v-btn small fab @click="() => moveShape(-10,0)">
             <v-icon> keyboard_arrow_left </v-icon>
           </v-btn>
         </v-flex>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(0,1)">
+          <v-btn small fab @click="() => moveShape(0,10)">
             <v-icon> keyboard_arrow_down </v-icon>
           </v-btn>
         </v-flex>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(1,0)">
+          <v-btn small fab @click="() => moveShape(10,0)">
             <v-icon> keyboard_arrow_right </v-icon>
           </v-btn>
         </v-flex>
