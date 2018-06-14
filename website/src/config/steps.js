@@ -13,8 +13,21 @@ export default {
   script: {
     step1: 
 `
+### Problem
+
+<br\>
+
+* To develop a very simple graphical editor to draw basic graphical objects, initially rectangles and circles.
+
+<br\>
+
+### Solution
+
+<br\>
+
 The first step was to specify what a shape is, in order to achive this a class Shape was created. All future shape types will be derived from this base class. A shape has a name and a (x,y) position as well as an ID (globally incremental).
 
+<br\>
 
 \`\`\`javascript
 class Shape {
@@ -31,7 +44,11 @@ class Shape {
 }
 \`\`\`
 
+<br\>
+
 For this example we specified 2 differente shapes, Circle and Rectangle.
+
+<br\>
 
 \`\`\`javascript
 class Rectangle extends Shape {
@@ -50,7 +67,11 @@ class Circle extends Shape {
 }
 \`\`\`
 
-To Create the Shapes a Factory is used for its ease of use.
+<br\>
+
+To create the shapes, a Factory pattern is used for its ease of use. The creation of shapes in a centralized way allows for an easy future extensibility. For example, with the notation of a document, the factory would be contained within the document. With this added shapes would emerge directly within the document avoiding the need to add shapes to documents every time we declare a new object.
+
+<br\>
 
 \`\`\`javascript
 class ShapeFactory {
@@ -64,7 +85,11 @@ class ShapeFactory {
 }
 \`\`\`
 
+<br\>
+
 ### Test Demo
+
+<br\>
 
 * Click on one of the buttons 'Circle' or 'Rectangle' to add new shapes.
 `,
