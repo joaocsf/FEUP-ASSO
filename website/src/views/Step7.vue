@@ -1,10 +1,38 @@
 <template>
-  <step title="Step6" description="Command">
+  <step title="Step7" description="Exporter(Visitor again)">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
     <template slot="canvas">
 
+    <!-- export dialog -->
+    <v-dialog v-model="exportDialog" max-width="500px">
+        <v-card>
+          <v-card-title class="headline">
+            Exported Document
+            <v-spacer> </v-spacer>
+            <v-btn flat fab @click="copyToClipboard" > <v-icon> file_copy </v-icon> </v-btn>
+          </v-card-title>
+          <v-card-text class="grey lighten-3">
+            {{exportedText}}          
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" flat @click.stop="exportDialog=false"> Close </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-snackbar
+        :timeout="1000"
+        :top="true"
+        :color="snackbarColor"
+        v-model="snackbar"
+      >
+        {{snackbarMessage}}
+        <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
+      </v-snackbar>
+      
       <div class="display-1"> Commands </div>
 
       <div class="title mt-3"> Creation </div>
@@ -51,11 +79,25 @@
 
       <v-divider class="mt-3"></v-divider>
 
-        <v-layout mt-3>
-          <v-flex>
-            <v-btn @click="undoCommand" small> Undo </v-btn>
+      <v-layout mt-3>
+        <v-flex>
+          <v-btn @click="undoCommand" small> Undo </v-btn>
+        </v-flex>
+      </v-layout> 
+
+      <v-divider class="mt-3"></v-divider>
+      <div class="title mt-3"> Exporter </div>
+
+    
+        <v-layout mt-3 row wrap justify-center> 
+          <v-flex xs4>
+            <v-btn @click="exportSimple" small> Export Simple </v-btn>
+          </v-flex>
+          <v-flex xs4>
+            <v-btn @click="exportXML" small> Export XML </v-btn>
           </v-flex>
         </v-layout> 
+   
 
       <v-layout row wrap>
         <v-flex xs12>
@@ -81,7 +123,6 @@
           </v-layout>
         </v-flex>
       </v-layout>
-
     </template>
   </step>
 </template>
@@ -95,7 +136,10 @@ import {ShapeFactory,
         GraphicVisualizer, 
         TextVisualizer, 
         GraphicVisualizerExtended,
-        MoveCommand} from '@/SimpleDraw.js'
+        MoveCommand,
+        SimpleExporter,
+        XMLExporter,
+        } from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
@@ -115,7 +159,12 @@ export default {
       groupId: 0,
       visualizer: null,
       visualizer2: null,
-      canvas: null
+      canvas: null,
+      exportDialog: false,
+      exportedText: '',
+      snackbar: false,
+      snackbarMessage: '',
+      snackbarColor: 'green'
     }
   },
   mounted () {
@@ -168,6 +217,29 @@ export default {
     },
     undoCommand(){
       this.document.undoCommand()
+    },
+    exportSimple(){
+      let file = new SimpleExporter(this.document).export()
+      this.exportedText = file
+      this.exportDialog = true
+    },
+    exportXML(){
+      let file = new XMLExporter(this.document).export()
+      this.exportedText = file
+      this.exportDialog = true
+    },
+    copyToClipboard(){
+      console.log('copying')
+      
+      this.$copyText(this.exportedText).then( (e) => {
+        this.snackbarMessage = 'Copied to clipboard';
+        this.snackbarColor = 'green'
+      }, (e) => {
+        this.snackbarMessage = 'Error Copying to clipboard';
+        this.snackbarColor = 'red'
+      })
+
+      this.snackbar = true
     }
   }
 }

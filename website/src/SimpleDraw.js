@@ -18,20 +18,20 @@ class Shape {
 
   /*Step 4 Visitor*/
   accept(visitor){
-    visitor.visit(this)
+    return visitor.visit(this)
   }
 }
 
 class Rectangle extends Shape {
-  constructor(name, x, y, height, width) {
+  constructor(name, x, y, width, height) {
     super(name, x, y);
-    this.height = height || 1;
     this.width = width || 1;
+    this.height = height || 1;
   }
 
   /*Step 4 Visitor*/
   accept(visitor){
-    visitor.visitRectangle(this)
+    return visitor.visitRectangle(this)
   }
 }
 
@@ -43,7 +43,7 @@ class Circle extends Shape {
 
   /*Step 4 Visitor*/
   accept(visitor){
-    visitor.visitCircle(this)
+    return visitor.visitCircle(this)
   }
 }
 
@@ -52,8 +52,8 @@ class ShapeFactory {
     return new Circle(name, x, y, radius)
   }
 
-  createRectangle(name, x, y, height, width) {
-    return new Rectangle(name, x, y, height, width)
+  createRectangle(name, x, y, width, height) {
+    return new Rectangle(name, x, y, width, height)
   }
 
   createGroup(name, x, y) {
@@ -95,7 +95,7 @@ class Group extends Shape {
   
   /*Step 4 Visitor*/
   accept(visitor){
-    visitor.visitGroup(this)
+    return visitor.visitGroup(this)
   }
 }
 
@@ -135,6 +135,11 @@ class Document {
   addShape(shape, group) {
     group = group || this.root
     this.addCommand(new AddCommand(shape, group))
+  }
+
+  setRoot(root){
+    this.root = root
+    this.notify()
   }
 
 }
@@ -283,36 +288,261 @@ class AddCommand extends Command {
 
 /*End of Step 6*/
 
-class ConsoleCommand {
-  constructor(){
-    this.commands = []
-    this.addCommand('help', 'Lists all the commands', this.listCommands)
-    this.addCommand('?', 'Lists all the commands', this.listCommands)
+
+/* Create step 7*/
+
+class Exporter {
+  constructor(document){
+    this.document = document
+    this.file = ''
+
   }
 
-  listCommands(strs){
-    let res = ""
-    for(let cmd in this.commands)
-      res += cmd + "\t" + this.commands[cmd]
-    return res
+  export(){
+    return this.document.root.accept(this);
   }
 
-  addCommand(name, description, callback){
-    this.commands[name] = {
-      description: description,
-      callback: callback
+  visitGroup(shape){
+    console.error('Abstract Class')
+  }
+
+  visitCircle(shape){
+    console.error('Abstract Class')
+  }
+
+  visitRectangle(shape){
+    console.error('Abstract Class')
+  }
+}
+
+class SimpleExporter extends Exporter {
+    constructor(document){
+      super(document)
+    }
+
+    visitGroup(shape){
+      let content= '';
+      for(let s of shape.shapes) {
+        content += ` ${s.accept(this)} `
+      }
+
+      let result = `G ${shape.id} ${shape.name} ${shape.x | 0} ${shape.y | 0} [${content}]` 
+
+      return result
+    }
+
+    visitCircle(shape){
+      return `C ${shape.id} ${shape.name} ${shape.x | 0} ${shape.y | 0} ${shape.radius | 0}`
+    }
+
+    visitRectangle(shape){
+      return `R ${shape.id} ${shape.name} ${shape.x | 0} ${shape.y | 0} ${shape.width | 0} ${shape.height | 0}`
+    }
+}
+
+class XMLExporter extends Exporter {
+    constructor(document){
+      super(document)
+
+      this.file = '<?xml version="1.0" encoding="iso-8859-1"?>'
+    }
+
+    visitGroup(shape){
+      let content = ''
+
+      for(let s of shape.shapes) {
+        content += ` ${s.accept(this)} `
+      }
+
+      return `<group id=${shape.id} name=${shape.name} x=${shape.x | 0} y=${shape.y | 0}> ${content} </group>`
+    }
+
+    visitCircle(shape){
+      return `<circle id=${shape.id} name=${shape.name} x=${shape.x | 0} y=${shape.y | 0} radius=${shape.radius | 0}>  </circle>`
+    }
+
+    visitRectangle(shape){
+      return `<rectangle id=${shape.id} name=${shape.name} x=${shape.x | 0} y=${shape.y | 0} width=${shape.width | 0} height=${shape.height | 0}> ${shape.name} </rectangle>`
+    }
+}
+
+/*End step 7*/ 
+
+
+/* Step 8*/ 
+class Tokenizer{
+  constructor(string){
+    this.tokens = string.replace(/\s+/g,' ').split(' ')
+    this.index = 0;
+  }
+
+  peek(){
+    if(this.index < this.tokens.length)
+      return this.tokens[this.index]
+    else
+      return null
+  }
+
+  hasNext(){
+    return (this.index < this.tokens.length)
+  }
+
+  pop(){
+    if(this.index < this.tokens.length)
+      return this.tokens[this.index++]
+    else
+      return null
+  }
+}
+
+
+class Expression {
+  constructor(file, factory, document){
+    this.file = file
+    this.factory = factory
+    this.document = document
+    this.tokenizer = new Tokenizer(file)
+  }
+
+  interpret(){
+    console.error('Abstract class')
+  }
+}
+
+class SimpleInterpreter extends Expression{
+  constructor(file, factory, document){
+    super(file, factory, document)
+
+    this.groups = []
+  }
+
+  appendShape(shape){
+    if(this.groups.length == 0)
+      return
+    else {
+      this.groups[this.groups.length - 1].append(shape)
     }
   }
 
-  executeCommand(line){
-    let cmds = line.split("")
-    if(cmds.length == 0) return
-    let command = this.commands[cmds[0]]
-    let res = command.callback() 
-    if(!res)
-      return "Usage:" + cmds[0] + "\t" + command.description
 
-    return res
+  parse(){
+    if(this.g())
+      this.document.setRoot(this.groups.pop())
+    else
+      return false
+  
+    return true
   }
+
+  g(){
+    if(this.tokenizer.hasNext()){
+      if(this.tokenizer.peek() == 'G'){
+        this.tokenizer.pop()
+
+        let id = this.tokenizer.pop() | 0
+        let name = this.tokenizer.pop()
+        let x = this.tokenizer.pop() | 0
+        let y = this.tokenizer.pop() | 0
+
+
+        let group = this.factory.createGroup(name, x, y)
+        group.id = id
+        this.appendShape(group)
+        this.groups.push(group)
+      
+        if(this.tokenizer.pop() == '['){
+          if(this.f())
+            if(this.tokenizer.pop() == ']'){
+              if(this.groups.length > 1)
+                this.groups.pop()
+              
+                return true
+            }
+        }
+        
+        return false
+      }
+    }else{
+      return true
+    }
+  }
+
+  c(){    
+    if(this.tokenizer.hasNext() && this.tokenizer.peek() == 'C'){
+      this.tokenizer.pop()
+
+      let id = this.tokenizer.pop() | 0
+      let name = this.tokenizer.pop()
+      let x = this.tokenizer.pop() | 0
+      let y = this.tokenizer.pop() | 0
+      let radius = this.tokenizer.pop() | 0
+      
+      let circle = this.factory.createCircle(name, x, y, radius)
+      circle.id = id
+      this.appendShape(circle)
+
+      return true
+    }    
+    return false
+  }
+
+  r(){    
+    if(this.tokenizer.hasNext() && this.tokenizer.peek() == 'R'){
+      this.tokenizer.pop()
+
+      let id = this.tokenizer.pop() | 0
+      let name = this.tokenizer.pop()
+      let x = this.tokenizer.pop() | 0
+      let y = this.tokenizer.pop() | 0
+      let width = this.tokenizer.pop() | 0
+      let height = this.tokenizer.pop() | 0
+      
+      let rectangle = this.factory.createRectangle(name, x, y, width, height)
+      rectangle.id = id
+      this.appendShape(rectangle)
+
+      return true
+    }    
+    return false
+  }
+
+
+  f(){
+    while(this.tokenizer.hasNext() && this.tokenizer.peek() !== ']'){      
+      if(!(this.c() || this.r() || this.g()))
+        return false    
+    }
+
+    return true
+  }
+
 }
-export {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer, GraphicVisualizerExtended, MoveCommand}
+/* CFG 
+G 0 Root 0 0 [ 
+  C 1 Circle 22 143 28  
+  R 2 Rectangle 196 91 97 106  
+  G 3 Group0 0 0 [ R 4 Rectangle 201 125 52 54  C 5 Circle 281 149 186 ] ]
+
+S -> G 
+F -> C| R | S | 0
+C -> "C" id nome x y r
+R -> "R" id nome x y w h
+G -> "G" id nome x y [F]
+*/
+
+/*End step 8*/
+
+
+
+export {
+  ShapeFactory,
+  Document,
+  ConsoleCommand,
+  GraphicVisualizer,
+  TextVisualizer,
+  GraphicVisualizerExtended,
+  MoveCommand,
+  SimpleExporter,
+  XMLExporter,
+  SimpleInterpreter
+}
