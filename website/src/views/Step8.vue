@@ -15,7 +15,7 @@
           </v-card-title>
           <v-card-text v-if="isImportMode" class="grey lighten-3">
             <v-text-field
-              multiline
+              multiLine
               autofocus
               clearable
               hint="Please insert here your text"
@@ -61,7 +61,7 @@
         </v-flex>
       </v-layout>
 
-      <v-divider class="mt-3" > </v-divider>
+      
       <div class="title mt-3"> Movements </div>
 
       <v-layout row justify-center>
@@ -90,39 +90,40 @@
         </v-flex>
       </v-layout>
 
-      <v-divider class="mt-3"></v-divider>
-
       <v-layout mt-3>
         <v-flex>
           <v-btn @click="undoCommand" small> Undo </v-btn>
         </v-flex>
       </v-layout> 
 
+      
       <v-divider class="mt-3"></v-divider>
+      <div class="display-1 mt-3"> Exporter/Importer </div>
+      
+
       <div class="title mt-3"> Exporter </div>
-
     
-        <v-layout mt-3 row wrap justify-center> 
-          <v-flex xs4>
-            <v-btn @click="exportSimple" small> Export Simple </v-btn>
-          </v-flex>
-          <v-flex xs4>
-            <v-btn @click="exportXML" small> Export XML </v-btn>
-          </v-flex>
-        </v-layout> 
+      <v-layout mt-3 row justify-center> 
+        <v-flex xs6>
+          <v-btn @click="exportSimple" small> Export Simple </v-btn>
+        </v-flex>
+        <v-flex xs6>
+          <v-btn @click="exportXML" small> Export XML </v-btn>
+        </v-flex>
+      </v-layout> 
 
-      <v-divider class="mt-3"></v-divider>
+      
       <div class="title mt-3"> Importer </div>
 
     
-        <v-layout mt-3 row wrap justify-center> 
-          <v-flex xs4>
-            <v-btn @click="() => {submitDialogAction = importSimple, toggleDialog=true, this.isImportMode = true}" small> Import Simple </v-btn>
-          </v-flex>
-          <v-flex xs4>
-            <v-btn @click="() => {submitDialogAction = importXML, toggleDialog=true, this.isImportMode = true}" small> Import XML </v-btn>
-          </v-flex>
-        </v-layout> 
+      <v-layout mt-3 row justify-center> 
+        <v-flex xs6>
+          <v-btn @click="() => {submitDialogAction = importSimple, toggleDialog=true, this.isImportMode = true}" small> Import Simple </v-btn>
+        </v-flex>
+        <v-flex xs6>
+          <v-btn @click="() => {submitDialogAction = importXML, toggleDialog=true, this.isImportMode = true}" small> Import XML </v-btn>
+        </v-flex>
+      </v-layout> 
    
    
 
@@ -166,7 +167,8 @@ import {ShapeFactory,
         MoveCommand,
         SimpleExporter,
         XMLExporter,
-        SimpleInterpreter
+        SimpleInterpreter,
+        XMLInterpreter
         } from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
@@ -265,10 +267,9 @@ export default {
       new SimpleInterpreter(this.importedDocument, this.shapeFactory, this.document).parse()
     },
     importXML(){
-      //new SimpleInterpreter(this.importedDocument, this.shapeFactory, this.document)
+      new XMLInterpreter(this.importedDocument, this.shapeFactory, this.document).parse()
     },
     copyToClipboard(){
-      console.log('copying')
       
       this.$copyText(this.exportedText).then( (e) => {
         this.snackbarMessage = 'Copied to clipboard';

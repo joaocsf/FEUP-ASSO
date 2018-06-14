@@ -415,6 +415,7 @@ class SimpleInterpreter extends Expression{
 
     this.groups = []
   }
+  
 
   appendShape(shape){
     if(this.groups.length == 0)
@@ -433,6 +434,15 @@ class SimpleInterpreter extends Expression{
   
     return true
   }
+
+  /* CFG 
+    S -> G 
+    F -> C| R | S | 0
+    C -> "C" id nome x y r
+    R -> "R" id nome x y w h
+    G -> "G" id nome x y [F]
+  */
+
 
   g(){
     if(this.tokenizer.hasNext()){
@@ -517,18 +527,34 @@ class SimpleInterpreter extends Expression{
   }
 
 }
-/* CFG 
-G 0 Root 0 0 [ 
-  C 1 Circle 22 143 28  
-  R 2 Rectangle 196 91 97 106  
-  G 3 Group0 0 0 [ R 4 Rectangle 201 125 52 54  C 5 Circle 281 149 186 ] ]
 
-S -> G 
-F -> C| R | S | 0
-C -> "C" id nome x y r
-R -> "R" id nome x y w h
-G -> "G" id nome x y [F]
+class XMLInterpreter extends Expression{
+  constructor(file, factory, document){
+    super(file, factory, document)
+    this.groups = []
+
+    this.xmlDoc = new DOMParser().parseFromString(file,"text/xml");
+    
+  }
+
+  parse(){
+    console.log('xmlDoc',this.xmlDoc)
+  }
+
+
+
+}
+
+/*
+<group id=0 name=Root x=0 y=0>  
+  <circle id=1 name=Circle x=85 y=162 radius=124>  </circle>  
+  <group id=2 name=Group0 x=0 y=0>
+    <rectangle id=3 name=Rectangle x=34 y=63 width=86 height=34> Rectangle </rectangle>  
+  </group>  
+</group>
+
 */
+
 
 /*End step 8*/
 
@@ -544,5 +570,6 @@ export {
   MoveCommand,
   SimpleExporter,
   XMLExporter,
-  SimpleInterpreter
+  SimpleInterpreter,
+  XMLInterpreter
 }
