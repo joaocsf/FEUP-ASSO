@@ -71,6 +71,13 @@ class Group extends Shape {
   append(shape) {
     this.shapes.push(shape);
   }
+  
+  remove (shape) {
+    let index = this.shapes.indexOf(shape)
+
+    if(index != -1)
+      this.shapes.splice(index, 1)
+  }
 
   translate(x, y) {
     this.foreach(shape => {if(shape !== this) shape.translate(x,y)})
@@ -95,8 +102,6 @@ class Group extends Shape {
 class Document {
   constructor(){
     this.root = new Group('Root')
-    this.map = {}
-    this.map[this.root.id] = this.root
 
     /* Step 5 Observer */
     this.listeners = []
@@ -107,6 +112,7 @@ class Document {
 
   attach(observer){
     this.listeners.push(observer)
+    observer.update()
   }
 
   addCommand(command){
@@ -127,11 +133,10 @@ class Document {
   }
 
   addShape(shape, group) {
-    this.map[shape.id] = shape
     group = group || this.root
-    group.append(shape)
-    this.notify()
+    this.addCommand(new AddCommand(shape, group))
   }
+
 }
 
 /* Start of step 3 */
@@ -158,12 +163,12 @@ class TextVisualizer extends Visualizer {
 
   representation(group) {
     group = group || this.document.root
-    let res = `<div> ${group.getName()} </div>`
+    let res = `<div> ${group.getName()} (${group.x | 0}, ${group.y | 0}) </div>`
     let content = ''
     for(let shape of group.shapes){
       let isGroup = shape instanceof Group
-      let subcontent = isGroup ? this.representation(shape) : shape.getName()
-      content += `<li class="${isGroup?'group':''}" > ${subcontent} </li>`
+      let subcontent = isGroup ? this.representation(shape) : ` ${shape.getName()} (${shape.x | 0}, ${shape.y | 0})`
+      content += `<li class="${isGroup?'group':' '}" > ${subcontent} </li>`
     }
     if(content.length > 0)
       res += `<ul> ${content} </ul>`
@@ -258,6 +263,22 @@ class MoveCommand extends Command {
     this.shape.translate(-this.x,-this.y)
   }
 }
+
+class AddCommand extends Command {
+  constructor(shape, group){
+    super()
+    this.shape = shape
+    this.group = group
+  }
+
+  execute(){
+    this.group.append(this.shape)
+  }
+  unexecute(){
+    this.group.remove(this.shape)
+  }
+}
+
 
 
 /*End of Step 6*/

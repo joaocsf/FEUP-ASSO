@@ -21,12 +21,22 @@
       </v-layout>
       <v-layout row wrap>
         <v-flex xs12>
-          <recursive-list class="ma-2 limit-list" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
+          <recursive-list 
+            class="ma-2 limit-list"
+            v-if="document != null"
+            :group="document.root"
+            :selectedGroup="selectedGroup"
+            :selectedShape="selectedShape"
+            @objselected="(group, shape) => {
+              selectedGroup = group
+              selectedShape = shape
+            }" 
+          />
         </v-flex>
         <v-flex xs12>
           <v-layout column>
             <v-flex :class="{hidden: switchViews}">
-              <new-canvas class="limit-canvas" ref="canvas"/>
+              <new-canvas :action="() => {if(visualizer != null) visualizer.draw()}" class="limit-canvas" ref="canvas" />
             </v-flex>
             <v-flex :class="{hidden: !switchViews}">
               <div ref="text" class="limit-canvas text-xs-left"> </div>
@@ -56,11 +66,12 @@ export default {
   data() {
     return {
       script: steps.script.step5,
-      switchViews: true,
+      switchViews: false,
       document: null,
       console: null,
       shapeFactory: null,
       selectedGroup: null,
+      selectedShape: null,
       html: null,
       groupId: 0,
       visualizer: null,
@@ -75,12 +86,17 @@ export default {
     let context = this.canvas.getContext()
     let text = this.$refs.text
 
+    this.selectedGroup = this.document.root
+    this.selectedShape = this.document.root
     this.visualizer = new GraphicVisualizerExtended(context, this.document)
     this.visualizer2= new TextVisualizer(text, this.document)
     this.document.attach(this.visualizer)
     this.document.attach(this.visualizer2)
   },
   methods: {
+    getGroup(){
+      return (this.selectedShape != null && this.selectedShape.constructor.name == 'Group') ? this.selectedShape : this.selectedGroup;
+    },
     rnd(){
       return Math.random() * 200;
     },
@@ -89,15 +105,15 @@ export default {
     },
     createRectangle () {
       let shape  = this.shapeFactory.createRectangle('Rectangle', this.rnd(), this.rnd(), this.rnd(), this.rnd())
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     createCircle () {
       let shape  = this.shapeFactory.createCircle('Circle', this.rnd(), this.rnd(), this.rnd())
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     createGroup () {
       let shape  = this.shapeFactory.createGroup('Group' + this.groupId++)
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     onSwitchViews() {
       this.switchViews = !this.switchViews

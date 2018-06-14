@@ -4,34 +4,82 @@
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
     <template slot="canvas">
-      
-      <v-layout row wrap>
+
+      <div class="display-1"> Commands </div>
+
+      <div class="title mt-3"> Creation </div>
+      <v-layout mt-3 row wrap>
         <v-flex xs4>
-        <v-btn @click="createCircle" small> Circle </v-btn>
+          <v-btn @click="createCircle" small> Circle </v-btn>
         </v-flex>
         <v-flex xs4>
-        <v-btn @click="createRectangle" small> Rectangle</v-btn>
+          <v-btn @click="createRectangle" small> Rectangle</v-btn>
         </v-flex>
         <v-flex xs4>
-        <v-btn @click="createGroup" small> Group</v-btn>
-        </v-flex>
-        <v-flex>
-          <v-btn @click="onSwitchViews" small> Switch Views </v-btn>
-          <v-btn @click="undoCommand" small> Undo </v-btn>
+          <v-btn @click="createGroup" small> Group</v-btn>
         </v-flex>
       </v-layout>
+
+      <v-divider class="mt-3" > </v-divider>
+      <div class="title mt-3"> Movements </div>
+
+      <v-layout row justify-center>
+        <v-flex xs2 sm1>
+          <v-btn small fab @click="() => moveShape(0,-1)">
+            <v-icon> keyboard_arrow_up </v-icon>
+          </v-btn>
+        </v-flex>
+      </v-layout>
+
+      <v-layout row justify-center>
+        <v-flex xs2 sm1>
+          <v-btn small fab @click="() => moveShape(-1,0)">
+            <v-icon> keyboard_arrow_left </v-icon>
+          </v-btn>
+        </v-flex>
+        <v-flex xs2 sm1>
+          <v-btn small fab @click="() => moveShape(0,1)">
+            <v-icon> keyboard_arrow_down </v-icon>
+          </v-btn>
+        </v-flex>
+        <v-flex xs2 sm1>
+          <v-btn small fab @click="() => moveShape(1,0)">
+            <v-icon> keyboard_arrow_right </v-icon>
+          </v-btn>
+        </v-flex>
+      </v-layout>
+
+      <v-divider class="mt-3"></v-divider>
+
+        <v-layout mt-3>
+          <v-flex>
+            <v-btn @click="undoCommand" small> Undo </v-btn>
+          </v-flex>
+        </v-layout> 
+
       <v-layout row wrap>
         <v-flex xs12>
-          <recursive-list class="ma-2 limit-list" 
-          v-if="document != null" 
-          :group="document.root" 
-          :action="moveShape"
-          @objselected="(value) => selectedGroup = value"/>
+          <recursive-list 
+            class="ma-2 limit-list"
+            v-if="document != null"
+            :group="document.root"
+            :selectedGroup="selectedGroup"
+            :selectedShape="selectedShape"
+            @objselected="(group, shape) => {
+              selectedGroup = group
+              selectedShape = shape
+            }" 
+          />
         </v-flex>
+
+        <v-flex xs12 >
+          <v-btn @click="onSwitchViews"> Switch Views </v-btn>
+        </v-flex>
+
         <v-flex xs12>
           <v-layout column>
             <v-flex :class="{hidden: switchViews}">
-              <new-canvas class="limit-canvas" ref="canvas"/>
+              <new-canvas :action="() => {if(visualizer != null) visualizer.draw()}" class="limit-canvas" ref="canvas" />
             </v-flex>
             <v-flex :class="{hidden: !switchViews}">
               <div ref="text" class="limit-canvas text-xs-left"> </div>
@@ -39,6 +87,7 @@
           </v-layout>
         </v-flex>
       </v-layout>
+
     </template>
   </step>
 </template>
@@ -62,14 +111,16 @@ export default {
   data() {
     return {
       script: steps.script.step6,
-      switchViews: true,
+      switchViews: false,
       document: null,
       console: null,
       shapeFactory: null,
       selectedGroup: null,
+      selectedShape: null,
       html: null,
       groupId: 0,
       visualizer: null,
+      visualizer2: null,
       canvas: null
     }
   },
@@ -80,13 +131,18 @@ export default {
     this.canvas = this.$refs.canvas
     let context = this.canvas.getContext()
     let text = this.$refs.text
-
+  
+    this.selectedGroup = this.document.root
+    this.selectedShape = this.document.root
     this.visualizer = new GraphicVisualizerExtended(context, this.document)
     this.visualizer2= new TextVisualizer(text, this.document)
     this.document.attach(this.visualizer)
     this.document.attach(this.visualizer2)
   },
   methods: {
+    getGroup(){
+      return (this.selectedShape != null && this.selectedShape.constructor.name == 'Group') ? this.selectedShape : this.selectedGroup;
+    },
     rnd(){
       return Math.random() * 200;
     },
@@ -95,24 +151,26 @@ export default {
     },
     createRectangle () {
       let shape  = this.shapeFactory.createRectangle('Rectangle', this.rnd(), this.rnd(), this.rnd(), this.rnd())
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     createCircle () {
       let shape  = this.shapeFactory.createCircle('Circle', this.rnd(), this.rnd(), this.rnd())
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     createGroup () {
       let shape  = this.shapeFactory.createGroup('Group' + this.groupId++)
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     onSwitchViews() {
       this.switchViews = !this.switchViews
       this.canvas.onResize()
       this.visualizer.draw()
     },
-    moveShape(shape){
-      let command = new MoveCommand(shape, this.rnd()-100, this.rnd()-100)
-      this.document.addCommand(command)
+    moveShape(x,y){
+      if(this.selectedShape != null) {
+        let command = new MoveCommand(this.selectedShape, x, y)
+        this.document.addCommand(command)
+      }
     },
     undoCommand(){
       this.document.undoCommand()
