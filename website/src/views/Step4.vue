@@ -1,5 +1,5 @@
 <template>
-  <page title="Step4" description="Visitor">
+  <step title="Step4" description="Visitor">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
@@ -38,13 +38,12 @@
         </v-flex>
       </v-layout>
     </template>
-  </page>
+  </step>
 </template>
 
 <script>
-// @ is an alias to /src
-import Page from '@/components/utils/Page.vue'
-import pages from '@/config/pages.js'
+import Step from '@/components/utils/Step.vue'
+import steps from '@/config/steps.js'
 import {ShapeFactory, 
         Document, 
         ConsoleCommand, 
@@ -54,13 +53,12 @@ import {ShapeFactory,
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
-  name: 'home',
   components: {
-    Page, RecursiveList, NewCanvas
+    Step, RecursiveList, NewCanvas
   },
   data() {
     return {
-      script: pages.script.step4,
+      script: steps.script.step4,
       switchViews: true,
       document: null,
       console: null,
@@ -111,9 +109,6 @@ export default {
 </script>
 
 <style>
-  page {
-    text-align: left;
-  }
 
   li {
     margin-left: 2em;

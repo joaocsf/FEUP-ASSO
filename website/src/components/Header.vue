@@ -5,19 +5,19 @@
         <v-list> 
           <v-list-tile>
             <v-list-tile-title class="title">
-              Design Patterns
+              Steps
             </v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-toolbar>
       <v-divider></v-divider>
       <v-list dense class="pt-0">
-        <v-list-tile v-for="page in pages" :key="page.title" @click="loadPage(page.route)">
+        <v-list-tile v-for="step in steps" :key="step.title" @click="loadPage(step.route)">
           <v-list-tile-action>
-            <v-icon> {{page.icon}} </v-icon>
+            <v-icon> {{step.icon}} </v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-            <v-list-tile-title> {{page.title}} </v-list-tile-title>
+            <v-list-tile-title> {{step.title}} </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
@@ -25,31 +25,33 @@
 
     <v-toolbar fixed app :clipped-left="clipped">
       <v-toolbar-side-icon @click="enable = !enable"></v-toolbar-side-icon>
-      <v-toolbar-title> Design Patterns </v-toolbar-title>
+      <v-toolbar-title> 
+        <v-btn flat @click="loadPage('/')"> Simple Draw - Design Patterns </v-btn>
+      </v-toolbar-title>
       <v-spacer> </v-spacer>
     </v-toolbar>  
   </div>
 </template>
 
 <script>
-import pages from '@/config/pages.js'
+import steps from '@/config/steps.js'
 export default {
   data () {
     return {
       enable: true,
       clipped: false,
-      pages: pages.pages
+      steps: steps.steps
     }
   },
   methods: {
-    loadPage (page) {
-      this.$router.push(page)
+    loadPage (route) {
+      this.$router.push(route)
     }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
+
+<style scoped>
 
 </style>

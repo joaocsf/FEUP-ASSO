@@ -1,13 +1,13 @@
 export default {
-  pages: [
-    {title: 'Observer', icon: 'remove_red_eye', route: 'observer'},
-    {title: 'Command', icon: 'label_important', route: 'command'},
+  steps: [
     {title: 'Step1', icon: 'label_important', route: 'step1'},
     {title: 'Step2', icon: 'label_important', route: 'step2'},
     {title: 'Step3', icon: 'label_important', route: 'step3'},
     {title: 'Step4', icon: 'label_important', route: 'step4'},
     {title: 'Step5', icon: 'label_important', route: 'step5'},
-    {title: 'Step6', icon: 'label_important', route: 'step6'}
+    {title: 'Step6', icon: 'label_important', route: 'step6'},
+    {title: 'Step7', icon: 'label_important', route: 'step7'},
+    {title: 'Step8', icon: 'label_important', route: 'step8'},
   ],
 
   script: {
@@ -237,5 +237,15 @@ Now when creating new objects the visualizers should update accordingly.
 `
 # TO-DO STEP 6
 `,
+  step7:
+  `
+  # TO-DO STEP 7
+  visitor to export document
+  `,
+  step8:
+  `
+  # TO-DO STEP 8
+  interpretor to import document
+  `,
   }
 }

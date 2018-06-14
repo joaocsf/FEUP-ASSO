@@ -1,5 +1,5 @@
 <template>
-  <step title="Step5" description="Observer">
+  <step title="Step8" description="Interpreter">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
@@ -17,11 +17,16 @@
         </v-flex>
         <v-flex>
           <v-btn @click="onSwitchViews" small> Switch Views </v-btn>
+          <v-btn @click="undoCommand" small> Undo </v-btn>
         </v-flex>
       </v-layout>
       <v-layout row wrap>
         <v-flex xs12>
-          <recursive-list class="ma-2 limit-list" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
+          <recursive-list class="ma-2 limit-list" 
+          v-if="document != null" 
+          :group="document.root" 
+          :action="moveShape"
+          @objselected="(value) => selectedGroup = value"/>
         </v-flex>
         <v-flex xs12>
           <v-layout column>
@@ -46,7 +51,8 @@ import {ShapeFactory,
         ConsoleCommand, 
         GraphicVisualizer, 
         TextVisualizer, 
-        GraphicVisualizerExtended} from '@/SimpleDraw.js'
+        GraphicVisualizerExtended,
+        MoveCommand} from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
@@ -55,7 +61,7 @@ export default {
   },
   data() {
     return {
-      script: steps.script.step5,
+      script: steps.script.step8,
       switchViews: true,
       document: null,
       console: null,
@@ -103,6 +109,13 @@ export default {
       this.switchViews = !this.switchViews
       this.canvas.onResize()
       this.visualizer.draw()
+    },
+    moveShape(shape){
+      let command = new MoveCommand(shape, this.rnd()-100, this.rnd()-100)
+      this.document.addCommand(command)
+    },
+    undoCommand(){
+      this.document.undoCommand()
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <page title="Step3" description="Strategy">
+  <step title="Step3" description="Strategy">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
     </template>
@@ -38,25 +38,23 @@
         </v-flex>
       </v-layout>
     </template>
-  </page>
+  </step>
 </template>
 
 <script>
-// @ is an alias to /src
-import Page from '@/components/utils/Page.vue'
-import pages from '@/config/pages.js'
+import Step from '@/components/utils/Step.vue'
+import steps from '@/config/steps.js'
 import {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer } from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
-  name: 'home',
   components: {
-    Page, RecursiveList, NewCanvas
+    Step, RecursiveList, NewCanvas
   },
   data() {
     return {
       switchViews: true,
-      script: pages.script.step3,
+      script: steps.script.step3,
       document: null,
       console: null,
       shapeFactory: null,
@@ -106,9 +104,6 @@ export default {
 </script>
 
 <style>
-  page {
-    text-align: left;
-  }
 
   li {
     margin-left: 2em;
