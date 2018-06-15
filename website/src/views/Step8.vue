@@ -1,5 +1,5 @@
 <template>
-  <step title="Step8" description="Importer">
+  <step title="Step 8" description="Interpreter">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
       <v-btn outline color="blue" to="/"> Go back to home </v-btn>

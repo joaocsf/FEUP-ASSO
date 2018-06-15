@@ -1,5 +1,5 @@
 <template>
-  <step title="Step6" description="Command">
+  <step title="Step 6" description="Command">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
       <v-btn outline color="blue" to="/step7"> Continue to step 7 </v-btn>

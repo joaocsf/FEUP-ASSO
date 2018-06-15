@@ -367,7 +367,6 @@ document.attach(visualizer2)
 `,
     step6:
 `
-# TO-DO STEP 6
 ### Problem
 
 <br/>
@@ -377,56 +376,449 @@ document.attach(visualizer2)
 <br/>
 
 ### Solution
+<br/>
 
+In the preceding steps we had a limit choice of operations that were possible to execute in simple draw.
+It was possible to create circles, rectangle and groups as well as switch views, but after the addition of one of this shapes we could not do anything with them.
+Wouldn't it be nice if we could also move the shapes and delete the after their creation?
+
+Well, don't worry, that's what this step is all about!
+
+To achieve this behaviours we will use the **command pattern**!
+This pattern allows us to wrap a request under an object as a command and pass it to an invoker object. Then the Invoker object looks for the appropriate object which can handle this command and passes the command to the corresponding object which executes the command.
+
+So we will have three roles, the *requester*, the *command* and the *invoker*.
+let's dig into every one of them
+
+Starting with the *request* class, the shape will be the one acting as a request class, since every command will affect and mutate shapes. 
+
+Moving one to the *command*, this is represented through an abstract class, like shown below.
+This class as two, self-explanatory, methods one for the execution of the command related and one for the 'unexecution', that will that complete the Do/Undo behaviour. 
+
+\`\`\`javascript
+
+class Command {
+  execute(){
+    console.error('Abstract Class')
+  }
+  unexecute(){
+    console.error('Abstract Class')
+  }
+}
+\`\`\`
+
+This class is then extended and implemented by each type of command.
+We have created two concrete commands:
+
+#### Movement command
+
+This concrete command is responsible for the translation of every shape.
+
+\`\`\`javascript
+class MoveCommand extends Command {
+  constructor(shape, x, y){
+    super()
+    this.shape = shape
+    this.x = x
+    this.y = y
+  }
+
+  execute(){
+    this.shape.translate(this.x,this.y)
+  }
+  unexecute(){
+    this.shape.translate(-this.x,-this.y)
+  }
+}
+\`\`\`
+#### Movement command
+
+This concrete command is responsible for the creation and deletion of every shape.
+
+\`\`\`javascript
+class AddCommand extends Command {
+  constructor(shape, group){
+    super()
+    this.shape = shape
+    this.group = group
+  }
+
+  execute(){
+    this.group.append(this.shape)
+  }
+  unexecute(){
+    this.group.remove(this.shape)
+  }
+}
+\`\`\`
+
+Finally the *invoker* class, this will be the document, this class receives the commands and it's responsable for their execution.
+Every command is stored on a structure, to be able to achieve the undo operation. 
+
+\`\`\`javascript
+class Document {
+  constructor(){
+    (...)
+    this.commands = []
+  }
+
+  (...)
+
+  addCommand(command){
+    command.execute()
+    this.commands.push(command)
+    this.notify()
+  }
+
+  undoCommand(){
+    if(this.commands.length == 0) return;
+    this.commands.pop().unexecute()
+    this.notify()
+  }
+
+  (...)
+}
+\`\`\`
 
 ### Test Demo
 <br/>
 
-* Topic
+* The buttons related to the creation of objects are know using the command pattern stated, so after the creation of objects, the user can press the undo button to remove the object;
+* Buttons for the movement of shape were also added, the user can select a shape in the tree (that will become highlighted in blue) and then press the arrow buttons, since this is also a command, every movement can be undone by pressing the undo button.
 
 <br/>
 `,
   step7:
   `
-# TO-DO STEP 7
-visitor to export document
-### Problem
+  ### Problem
 
-<br/>
+  <br/>
+  
+  * SimpleDraw must be able to read and write the document using different formats (text, xml, binary, etc).
+  
+  <br/>
+  
+  ### Solution
+  
+  We can already create some amazing documents, but all the work is lost as soon as we refresh the page.
+  In this step we will export address how we can export our documents in different formats.
+  
+  In order to achieve this the visitor pattern will be used again, the shapes will continue to play the visitable role, as stated below.
+  
+  \`\`\`javascript 
+  class Shape {
+    (...)
+    accept(visitor){
+      return visitor.visit(this)
+    }
+  }
+  
+  \`\`\`
+  
+  But the visitor will know be an exporter class that receives the document that will be exported.
+  
+  \`\`\`javascript
+  class Exporter {
+    constructor(document){
+      this.document = document
+      this.file = ''
+  
+    }
+  
+    export(){
+      return this.document.root.accept(this);
+    }
+  
+    visitGroup(shape){
+      console.error('Abstract Class')
+    }
+  
+    visitCircle(shape){
+      console.error('Abstract Class')
+    }
+  
+    visitRectangle(shape){
+      console.error('Abstract Class')
+    }
+  }
+  \`\`\`
+  This class can then be extended in order to implement many different types of export formats.
+  In this tutorial we implemented two types of exporters a *SimpleExporter* and a *XMLExporter*, we will go through each one of them now.
+  
+  Starting with the *SimpleExporter*, this exporter, creates file in a specific format developed by us. It consists in a very simplistic format, containing the necessary information in a minimilistic way to store all the document information.
+  
+  Below you can find the implementation of the exporter as well as an example of the exported file.
+  
+  \`\`\`javascript
+  
+  class SimpleExporter extends Exporter {
+      constructor(document){
+        super(document)
+      }
+  
+      visitGroup(shape){
+        let content= '';
+        for(let s of shape.shapes) {
+          content += \` \${s.accept(this)} \`
+        }
+  
+        let result = \`G \${shape.id} \${shape.name} \${shape.x | 0} \${shape.y | 0} [\${content}]\` 
+  
+        return result
+      }
+  
+      visitCircle(shape){
+        return \`C \${shape.id} \${shape.name} \${shape.x | 0} \${shape.y | 0} \${shape.radius | 0}\`
+      }
+  
+      visitRectangle(shape){
+        return \`R \${shape.id} \${shape.name} \${shape.x | 0} \${shape.y | 0} \${shape.width | 0} \${shape.height | 0}\`
+      }
+  }
+  \`\`\`
 
-* SimpleDraw must be able to write the document using different formats (text, xml, binary, etc).
-
-<br/>
-
-### Solution
-
-
-### Test Demo
-<br/>
-
-* Topic
-
-<br/>
+  Example:
+  
+  \`\`\`javascript
+  G 23 Root 0 0 [ 
+    C 24 Circle 121 74 97  
+    G 25 Group0 0 0 [ 
+      C 26 Circle 65 59 88 
+    ]  
+    C 27 Circle 67 115 195  
+    R 28 Rectangle 96 174 34 92 
+  ]
+  \`\`\`
+  Now addresing the *XMLExporter* , as you probably already guessed, this exporter creates files in the XML format that we all know.
+  You can find the implementation below (it is rather similar to the simpleExporter implementation).
+  
+  \`\`\`javascript
+  class XMLExporter extends Exporter {
+      constructor(document){
+        super(document)
+  
+        this.file = '<?xml version="1.0" encoding="iso-8859-1"?>'
+      }
+  
+      visitGroup(shape){
+        let content = ''
+  
+        for(let s of shape.shapes) {
+          content += \` \${s.accept(this)} \`
+        }
+  
+        return \`<group id='\${shape.id}' name='\${shape.name}' x='\${shape.x | 0}' y='\${shape.y | 0}'> \${content} </group>\`
+      }
+  
+      visitCircle(shape){
+        return \`<circle id='\${shape.id}' name='\${shape.name}' x='\${shape.x | 0}' y='\${shape.y | 0}' radius='\${shape.radius | 0}'>  </circle>\`
+      }
+  
+      visitRectangle(shape){
+        return \`<rectangle id='\${shape.id}' name='\${shape.name}' x='\${shape.x | 0}' y='\${shape.y | 0}' width='\${shape.width | 0}' height='\${shape.height | 0}'>  </rectangle>\`
+      }
+  }
+  \`\`\`
+  
+  \`\`\`xml
+  <group id='23' name='Root' x='0' y='0'>  
+    <circle id='24' name='Circle' x='121' y='74' radius='97'></circle>  
+    <group id='25' name='Group0' x='0' y='0'>  
+      <circle id='26' name='Circle' x='65' y='59' radius='88'></circle>  
+    </group>  
+    <circle id='27' name='Circle' x='67' y='115' radius='195'></circle>  
+    <rectangle id='28' name='Rectangle' x='96' y='174' width='34' height='92'></rectangle>  
+  </group>
+  \`\`\`
+  
+  
+  ### Test Demo
+  <br/>
+  
+  * In order to export the document, the user must press on of the export button *Export Simple*(export the file in the simple format) or *Export XML*(export the file in the XML format);
+  * This will open a dialog with the exported result that contains a handy button to copy the document to the clipboard
+  
+  <br/>
+  
 `,
   step8:
 `
-# TO-DO STEP 8
-interpretor to import document
 ### Problem
 
 <br/>
 
-* SimpleDraw must be able to read the document using different formats (text, xml, binary, etc).
+* SimpleDraw must be able to read and write the document using different formats (text, xml, binary, etc).
 
 <br/>
 
 ### Solution
 
+In the previous step we added the functionality to successfully export our documents, but what about importing the documents?
+
+This will be covered in this step!
+
+In order to interpret the previously exported files we will use the interpreter design pattern with some modifications to the one addressed by the gang-of-four.
+
+First of all we need to create our base expression class. 
+This will then be implemented by concrete classes that will interpret the provided expressions in the right way. 
+The expression receives the file to be interpreted, the factory to instantiate all the shapes and lastly the document to which the shapes will be attached. 
+
+\`\`\`javascript
+class Expression {
+  constructor(file, factory, document){
+    this.file = file
+    this.factory = factory
+    this.document = document
+  }
+
+  interpret(){
+    console.error('Abstract class')
+  }
+}
+\`\`\`
+
+We developed two interpreter(one for each format stated in the step 7).
+
+Starting with the simple interpreter, this class is rather extense due to the necessity to validate all the expression interpretation steps.
+But the followed process can be briefly understanded, just by looking to the following context free grammar(CFG) 
+
+\`\`\`
+
+  I -> G 
+  F -> C| R | I | 0
+  C -> "C" id nome x y r
+  R -> "R" id nome x y w h
+  G -> "G" id nome x y [F]
+\`\`\`
+
+A tokenizer class was also developed in order to split the file in tokens and provide the necessary methods to handle this tokens in the interpreter class.
+
+\`\`\`javascript
+class Tokenizer{
+  constructor(string){
+    this.tokens = string.replace(/\s+/g,' ').split(' ')
+    this.index = 0;
+  }
+
+  peek(){
+    if(this.index < this.tokens.length)
+      return this.tokens[this.index]
+    else
+      return null
+  }
+
+  hasNext(){
+    return (this.index < this.tokens.length)
+  }
+
+  pop(){
+    if(this.index < this.tokens.length)
+      return this.tokens[this.index++]
+    else
+      return null
+  }
+}
+\`\`\`
+A simplified version of the SimpleInterpreter class can be seen below, this version only contains the schema of the class with a brief explanation.
+For further understanding a link to the source code with the full implementation is provided in the homepage of this tutorial.
+
+\`\`\`javascript
+class SimpleInterpreter extends Expression{
+  constructor(file, factory, document){
+    super(file, factory, document)
+    this.tokenizer = new Tokenizer(file)
+    this.groups = []
+  }
+  
+  appendShape(shape){
+    /*
+      Appends the shape to it's parent when it is created
+    */
+  }
+
+  // Represents the 'I' in the CFG
+  interpret(){
+    /*
+      Start point of the interpretation process, calls g()
+    */
+  }
+
+  // Represents the 'G' in the CFG
+  g(){
+    /* 
+      Parses, instantiates and appends the the group shape to it's parent 
+      using the shape factory and the appendShape() function. 
+      Then calls f() in order to parse all the childs.
+    */
+  }
+
+  // Represents the 'C' in the CFG
+  c(){
+    /*    
+      Parses and instantiates and appends the circle shape using the shape factory 
+      and the appendShape() function.
+    */
+  }
+
+  // Represents the 'R' in the CFG
+  r(){
+    /*    
+      Parses and instantiates and appends the rectangle shape using the shape factory 
+      and the appendShape() function.
+    */
+  }
+
+  // Represents the 'F' in the CFG
+  f(){
+    /*
+      Calls g(), c(), r(), in order to continue the parsing of the nested structures
+    */
+  }
+}
+\`\`\`
+
+Now we have the XMLInterpreter, the schema followed by this interpreter is very similar to the shown above.
+The difference of this interpreter lies in the fact that the tokenizer is not used anymore and the xml tags are handled by the *DOMParser*.
+
+Below is available the basic schema of the class without the explanation of each function, since that is identical to the stated above.
+
+\`\`\`javascript
+class XMLInterpreter extends Expression{
+  constructor(file, factory, document){
+    super(file, factory, document)
+    this.groups = []
+    this.xmlDoc = new DOMParser().parseFromString(this.file,"text/xml");
+  }
+
+  // Indentical to the SimpleExporter schema
+  
+  appendShape(shape){
+  }
+
+  interpret(){
+  }
+
+  g(root){
+  }
+
+  c(root){    
+  }
+
+  r(root){   
+  }
+
+
+  f(nodes){
+  }
+
+}
+\`\`\`
 
 ### Test Demo
 <br/>
 
-* Topic
+* In order to test this feature, the user should click in import button for the right format and then past the previously exported text;
+* Then the user just has to submit and the changes will automagically be applied to the document.  
 
 <br/>
 `,
