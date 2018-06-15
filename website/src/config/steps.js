@@ -353,7 +353,7 @@ Each \`visit{ShapeName}\` Method is responsible to handle each shape. The draw m
 
 <br/>
 
-* A document must be viewed in different ways.
+* All views should be updated in real-time on data change.
 
 <br/>
 
