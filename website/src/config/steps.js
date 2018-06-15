@@ -46,7 +46,7 @@ class Shape {
 
 <br\>
 
-For this example we specified 2 differente shapes, Circle and Rectangle.
+For this example we specified 2 different shapes, Circle and Rectangle.
 
 <br\>
 
