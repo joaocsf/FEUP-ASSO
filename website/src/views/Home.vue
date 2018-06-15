@@ -74,7 +74,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-            <v-btn flat color="blue" to="/step1"> Explore </v-btn>
+            <v-btn outline color="blue" to="/step1"> Explore </v-btn>
         </v-card-actions>
       </v-card>
     </v-flex>

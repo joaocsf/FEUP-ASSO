@@ -39,7 +39,7 @@ import stepsObj from '@/config/steps.js'
 export default {
   data () {
     return {
-      enable: true,
+      enable: false,
       clipped: false,
       stepAux: stepsObj,
     }
