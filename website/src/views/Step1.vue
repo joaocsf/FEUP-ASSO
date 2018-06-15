@@ -1,7 +1,8 @@
 <template>
-  <page title="Step1" description="Factory">
+  <step title="Step 1" description="Factory">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
+      <v-btn outline color="blue" to="/step2"> Continue to step 2 </v-btn>
     </template>
     <template slot="canvas">
       <v-layout row>
@@ -22,32 +23,28 @@
         </template>
       </v-list>
     </template>
-  </page>
+  </step>
   
 </template>
 
 <script>
-// @ is an alias to /src
-import Page from '@/components/utils/Page.vue'
-import pages from '@/config/pages.js'
-import VueMarkdown from '@/config/pages.js'
+import Step from '@/components/utils/Step.vue'
+import steps from '@/config/steps.js'
 import {ShapeFactory} from '@/SimpleDraw.js'
 export default {
-  name: 'home',
   components: {
-    Page
+    Step
   },
   data() {
     return {
       shapes: [],
-      script: pages.script.step1,
+      script: steps.script.step1,
       shapeFactory: null,
       circleId: 1,
       rectId: 1
     }
   },
   mounted () {
-    console.log(ShapeFactory)
     this.shapeFactory = new ShapeFactory()
   },
   methods: {
@@ -62,9 +59,7 @@ export default {
 </script>
 
 <style>
-  page {
-    text-align: left;
-  }
+
  
 </style>
 

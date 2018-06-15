@@ -1,11 +1,52 @@
 <template>
-  <step title="Step 6" description="Command">
+  <step title="Step 8" description="Interpreter">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
-      <v-btn outline color="blue" to="/step7"> Continue to step 7 </v-btn>
+      <v-btn outline color="blue" to="/"> Go back to home </v-btn>
     </template>
     <template slot="canvas">
 
+    <!-- export dialog -->
+    <v-dialog v-model="toggleDialog" max-width="500px">
+        <v-card>
+          <v-card-title class="headline">
+            {{ isImportMode ? 'Imported' : 'Exported'}} Document
+            <v-spacer> </v-spacer>
+            <v-btn v-if="!isImportMode" flat fab @click="copyToClipboard" > <v-icon> file_copy </v-icon> </v-btn>
+          </v-card-title>
+          <v-card-text v-if="isImportMode" class="grey lighten-3">
+            <v-text-field
+              multiLine
+              autofocus
+              clearable
+              hint="Please insert here your text"
+              label="Document file"
+              required
+              solo
+              v-model="importedDocument"
+            />       
+          </v-card-text>
+          <v-card-text v-else class="grey lighten-3">
+            {{exportedText}}          
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" flat @click.stop="toggleDialog=false"> Close </v-btn>
+            <v-btn v-if="isImportMode" color="primary" flat @click.stop="() => {toggleDialog=false, submitDialogAction()}"> Submit </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-snackbar
+        :timeout="1000"
+        :top="true"
+        :color="snackbarColor"
+        v-model="snackbar"
+      >
+        {{snackbarMessage}}
+        <v-btn flat color="white" @click.native="snackbar = false">Close</v-btn>
+      </v-snackbar>
+      
       <div class="display-1"> Commands </div>
 
       <div class="title mt-3"> Creation </div>
@@ -21,12 +62,12 @@
         </v-flex>
       </v-layout>
 
-      <v-divider class="mt-3" > </v-divider>
+      
       <div class="title mt-3"> Movements </div>
 
       <v-layout row justify-center>
         <v-flex xs2 sm1>
-          <v-btn small fab @click="() => moveShape(0,-10)">
+          <v-btn small fab @click="() => moveShape(0,-1)">
             <v-icon> keyboard_arrow_up </v-icon>
           </v-btn>
         </v-flex>
@@ -50,27 +91,50 @@
         </v-flex>
       </v-layout>
 
-      <v-divider class="mt-3"></v-divider>
+      <v-layout mt-3>
+        <v-flex>
+          <v-btn @click="undoCommand" small> Undo </v-btn>
+        </v-flex>
+      </v-layout> 
 
-        <v-layout mt-3>
-          <v-flex>
-            <v-btn @click="undoCommand" small> Undo </v-btn>
-          </v-flex>
-        </v-layout> 
+      
+      <v-divider class="mt-3"></v-divider>
+      <div class="display-1 mt-3"> Exporter/Importer </div>
+      
+
+      <div class="title mt-3"> Exporter </div>
+    
+      <v-layout mt-3 row justify-center> 
+        <v-flex xs6>
+          <v-btn @click="exportSimple" small> Export Simple </v-btn>
+        </v-flex>
+        <v-flex xs6>
+          <v-btn @click="exportXML" small> Export XML </v-btn>
+        </v-flex>
+      </v-layout> 
+
+      
+      <div class="title mt-3"> Importer </div>
+
+    
+      <v-layout mt-3 row justify-center> 
+        <v-flex xs6>
+          <v-btn @click="() => {submitDialogAction = importSimple, toggleDialog=true, this.isImportMode = true}" small> Import Simple </v-btn>
+        </v-flex>
+        <v-flex xs6>
+          <v-btn @click="() => {submitDialogAction = importXML, toggleDialog=true, this.isImportMode = true}" small> Import XML </v-btn>
+        </v-flex>
+      </v-layout> 
+   
+   
 
       <v-layout row wrap>
         <v-flex xs12>
-          <recursive-list 
-            class="ma-2 limit-list"
-            v-if="document != null"
-            :group="document.root"
-            :selectedGroup="selectedGroup"
-            :selectedShape="selectedShape"
+          <recursive-list class="ma-2 limit-list" v-if="document != null" :group="document.root" :selectedGroup="selectedGroup" :selectedShape="selectedShape"
             @objselected="(group, shape) => {
               selectedGroup = group
               selectedShape = shape
-            }" 
-          />
+            }" />
         </v-flex>
 
         <v-flex xs12 >
@@ -88,7 +152,6 @@
           </v-layout>
         </v-flex>
       </v-layout>
-
     </template>
   </step>
 </template>
@@ -102,7 +165,12 @@ import {ShapeFactory,
         GraphicVisualizer, 
         TextVisualizer, 
         GraphicVisualizerExtended,
-        MoveCommand} from '@/SimpleDraw.js'
+        MoveCommand,
+        SimpleExporter,
+        XMLExporter,
+        SimpleInterpreter,
+        XMLInterpreter
+        } from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
@@ -111,7 +179,7 @@ export default {
   },
   data() {
     return {
-      script: steps.script.step6,
+      script: steps.script.step8,
       switchViews: false,
       document: null,
       console: null,
@@ -122,7 +190,15 @@ export default {
       groupId: 0,
       visualizer: null,
       visualizer2: null,
-      canvas: null
+      canvas: null,
+      toggleDialog: false,
+      exportedText: '',
+      importedDocument: '',
+      isImportMode: false,
+      snackbar: false,
+      snackbarMessage: '',
+      snackbarColor: 'green',
+      submitDialogAction: null
     }
   },
   mounted () {
@@ -175,6 +251,36 @@ export default {
     },
     undoCommand(){
       this.document.undoCommand()
+    },
+    exportSimple(){
+      let file = new SimpleExporter(this.document).export()
+      this.isImportMode = false
+      this.exportedText = file
+      this.toggleDialog = true
+    },
+    exportXML(){
+      let file = new XMLExporter(this.document).export()
+      this.isImportMode = false
+      this.exportedText = file
+      this.toggleDialog = true
+    },
+    importSimple(){
+      new SimpleInterpreter(this.importedDocument, this.shapeFactory, this.document).interpret()
+    },
+    importXML(){
+      new XMLInterpreter(this.importedDocument, this.shapeFactory, this.document).interpret()
+    },
+    copyToClipboard(){
+      
+      this.$copyText(this.exportedText).then( (e) => {
+        this.snackbarMessage = 'Copied to clipboard';
+        this.snackbarColor = 'green'
+      }, (e) => {
+        this.snackbarMessage = 'Error Copying to clipboard';
+        this.snackbarColor = 'red'
+      })
+
+      this.snackbar = true
     }
   }
 }

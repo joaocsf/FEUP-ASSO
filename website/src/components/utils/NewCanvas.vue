@@ -6,6 +6,7 @@
 
 <script>
 export default {
+  props: ['action'],
   data() {
     return {
       context: null,
@@ -24,10 +25,17 @@ export default {
       return this.context
     },
     onResize(){
-      if(this.canvas == null) return
+      if(this.canvas == null) 
+        return
+
       this.canvas.width = this.canvas.parentElement.clientWidth
       this.canvas.height = this.canvas.parentElement.clientHeight
+
+      this.context.fillStyle= '#000'
       this.context.fillRect(0,0, this.canvas.width, this.canvas.height)
+      
+      if(this.action)
+        this.action()
     }
   }
 }

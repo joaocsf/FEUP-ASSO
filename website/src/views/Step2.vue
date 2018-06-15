@@ -1,7 +1,8 @@
 <template>
-  <page title="Step2" description="Composite">
+  <step title="Step 2" description="Composite">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
+      <v-btn outline color="blue" to="/step3"> Continue to step 3 </v-btn>
     </template>
     <template slot="canvas">
       
@@ -18,25 +19,23 @@
       </v-layout>
       <recursive-list class="ma-2" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
     </template>
-  </page>
+  </step>
 </template>
 
 <script>
-// @ is an alias to /src
-import Page from '@/components/utils/Page.vue'
-import pages from '@/config/pages.js'
+import Step from '@/components/utils/Step.vue'
+import steps from '@/config/steps.js'
 import {ShapeFactory, Document, ConsoleCommand} from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 export default {
-  name: 'home',
   components: {
-    Page, RecursiveList
+    Step, RecursiveList
   },
   data() {
     return {
       document: null,
       console: null,
-      script: pages.script.step2,
+      script: steps.script.step2,
       shapeFactory: null,
       selectedGroup: null,
       groupId: 0
@@ -67,9 +66,7 @@ export default {
 </script>
 
 <style>
-  page {
-    text-align: left;
-  }
+
 
 </style>
 

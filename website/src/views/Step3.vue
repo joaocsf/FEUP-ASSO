@@ -1,7 +1,8 @@
 <template>
-  <page title="Step3" description="Strategy">
+  <step title="Step 3" description="Strategy">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
+      <v-btn outline color="blue" to="/step4"> Continue to step 4 </v-btn>
     </template>
     <template slot="canvas">
       
@@ -24,12 +25,22 @@
       </v-layout>
       <v-layout row wrap>
         <v-flex xs12>
-          <recursive-list class="ma-2 limit-list" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
+          <recursive-list 
+            class="ma-2 limit-list"
+            v-if="document != null"
+            :group="document.root"
+            :selectedGroup="selectedGroup"
+            :selectedShape="selectedShape"
+            @objselected="(group, shape) => {
+              selectedGroup = group
+              selectedShape = shape
+            }" 
+          />
         </v-flex>
         <v-flex xs12>
           <v-layout column>
             <v-flex :class="{hidden: switchViews}">
-              <new-canvas class="limit-canvas" ref="canvas"/>
+              <new-canvas :action="() => {if(visualizer != null) visualizer.draw()}" class="limit-canvas" ref="canvas"/>
             </v-flex>
             <v-flex :class="{hidden: !switchViews}">
               <div ref="text" class="limit-canvas text-xs-left"> </div>
@@ -38,29 +49,28 @@
         </v-flex>
       </v-layout>
     </template>
-  </page>
+  </step>
 </template>
 
 <script>
-// @ is an alias to /src
-import Page from '@/components/utils/Page.vue'
-import pages from '@/config/pages.js'
+import Step from '@/components/utils/Step.vue'
+import steps from '@/config/steps.js'
 import {ShapeFactory, Document, ConsoleCommand, GraphicVisualizer, TextVisualizer } from '@/SimpleDraw.js'
 import RecursiveList from '@/components/RecursiveList.vue'
 import NewCanvas from '@/components/utils/NewCanvas.vue'
 export default {
-  name: 'home',
   components: {
-    Page, RecursiveList, NewCanvas
+    Step, RecursiveList, NewCanvas
   },
   data() {
     return {
-      switchViews: true,
-      script: pages.script.step3,
+      switchViews: false,
+      script: steps.script.step3,
       document: null,
       console: null,
       shapeFactory: null,
       selectedGroup: null,
+      selectedShape: null,
       html: null,
       groupId: 0,
       visualizer: null,
@@ -75,10 +85,15 @@ export default {
     let context = this.canvas.getContext()
     let text = this.$refs.text
 
+    this.selectedGroup = this.document.root
+    this.selectedShape = this.document.root
     this.visualizer = new GraphicVisualizer(context, this.document)
     this.visualizer2= new TextVisualizer(text, this.document)
   },
   methods: {
+    getGroup(){
+      return (this.selectedShape != null && this.selectedShape.constructor.name == 'Group') ? this.selectedShape : this.selectedGroup;
+    },
     rnd(){
       return Math.random() * 200;
     },
@@ -87,15 +102,15 @@ export default {
     },
     createRectangle () {
       let shape  = this.shapeFactory.createRectangle('Rectangle', this.rnd(), this.rnd())
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     createCircle () {
       let shape  = this.shapeFactory.createCircle('Circle', this.rnd(), this.rnd())
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     createGroup () {
       let shape  = this.shapeFactory.createGroup('Group' + this.groupId++)
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     updateViews(){
       this.visualizer.draw()
@@ -106,9 +121,6 @@ export default {
 </script>
 
 <style>
-  page {
-    text-align: left;
-  }
 
   li {
     margin-left: 2em;

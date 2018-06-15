@@ -1,5 +1,5 @@
 <template>
-  <v-layout warp row>
+  <v-layout ref="doc" wrap row>
     <v-flex xs12 sm12 md12 offset-lg1 lg10> 
       <v-card color="">
         <v-card-title>
@@ -25,7 +25,10 @@
 
 <script>
 export default {
-  props: ['title', 'description']
+  props: ['title', 'description'],
+  mounted (){
+    window.scrollTo(0, 0)
+  }
 }
 </script>
 
