@@ -2,7 +2,7 @@
   <step title="Step 3" description="Strategy">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
-      <v-btn outline color="blue" to="/step4"> Continue to step 4 </v-btn>
+      <v-btn outline color="blue" to="/step4"  class="mt-4"> Continue to step 4 </v-btn>
     </template>
     <template slot="canvas">
       

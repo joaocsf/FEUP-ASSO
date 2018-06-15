@@ -2,7 +2,7 @@
   <div class="root elevation-2 white">
     <v-layout>
       <v-btn outline small icon @click="()=> expanded = !expanded">
-        <v-icon> {{expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}} </v-icon>
+        <v-icon> {{!expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}} </v-icon>
       </v-btn>
 
       <v-btn v-if="selectedGroup === group || selectedShape === group" outline small color="primary" @click="objselected(group, group)"> {{group.name}}</v-btn>

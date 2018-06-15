@@ -2,7 +2,7 @@
   <step title="Step 7" description="Visitor (again) ">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
-      <v-btn outline color="blue" to="/step8"> Continue to step 8 </v-btn>
+      <v-btn outline color="blue" to="/step8" class="mt-4"> Continue to step 8 </v-btn>
     </template>
     <template slot="canvas">
 
@@ -91,10 +91,10 @@
 
     
         <v-layout mt-3 row wrap justify-center> 
-          <v-flex xs4>
+          <v-flex xs6>
             <v-btn @click="exportSimple" small> Export Simple </v-btn>
           </v-flex>
-          <v-flex xs4>
+          <v-flex xs6>
             <v-btn @click="exportXML" small> Export XML </v-btn>
           </v-flex>
         </v-layout> 

@@ -2,7 +2,7 @@
   <step title="Step 2" description="Composite">
     <template slot="description">
       <vue-markdown class="text-xs-left" :source="script"> {{script}} </vue-markdown>
-      <v-btn outline color="blue" to="/step3"> Continue to step 3 </v-btn>
+      <v-btn outline color="blue" to="/step3" class="mt-4"> Continue to step 3 </v-btn>
     </template>
     <template slot="canvas">
       
@@ -17,7 +17,11 @@
         <v-btn @click="createGroup" small> Group</v-btn>
         </v-flex>
       </v-layout>
-      <recursive-list class="ma-2" v-if="document != null" :group="document.root" @objselected="(value) => selectedGroup = value"/>
+      <recursive-list class="ma-2 limit-list" v-if="document != null" :group="document.root" :selectedGroup="selectedGroup" :selectedShape="selectedShape"
+            @objselected="(group, shape) => {
+              selectedGroup = group
+              selectedShape = shape
+            }" />
     </template>
   </step>
 </template>
@@ -38,28 +42,34 @@ export default {
       script: steps.script.step2,
       shapeFactory: null,
       selectedGroup: null,
+      selectedShape: null,
       groupId: 0
     }
   },
   mounted () {
     this.shapeFactory = new ShapeFactory()
     this.document = new Document()
+    this.selectedGroup = this.document.root
+    this.selectedShape = this.document.root
   },
   methods: {
+    getGroup(){
+      return (this.selectedShape != null && this.selectedShape.constructor.name == 'Group') ? this.selectedShape : this.selectedGroup;
+    },
     addShapeToDocument(shape, parent) {
       this.document.addShape(shape, parent)
     },
     createRectangle () {
       let shape  = this.shapeFactory.createRectangle('Rectangle')
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     createCircle () {
       let shape  = this.shapeFactory.createCircle('Circle')
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     },
     createGroup () {
       let shape  = this.shapeFactory.createGroup('Group' + this.groupId++)
-      this.document.addShape(shape, this.selectedGroup)
+      this.document.addShape(shape, this.getGroup())
     }
   }
 }
