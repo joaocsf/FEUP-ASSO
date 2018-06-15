@@ -16,22 +16,27 @@
 
             <v-divider></v-divider>
 
-            <v-flex mt-4 xs12>
-              <div class="headline"> Authors </div>
-            </v-flex>
-            <v-flex xs12>
-              <div class="title"> David Azevedo </div>
-            </v-flex>
-            <v-flex xs12>
-              <div class="title"> João Ferreira </div>
-            </v-flex>
-            <v-flex xs12>
-              <div class="title"> João 20 </div>
-            </v-flex>
-            <v-flex xs12>
-              <div class="title"> José Martins </div>
-            </v-flex>
-
+            <v-layout mt-4 pt-2 pb-2 class="grey lighten-3 elevation-2" wrap row>
+              <v-flex xs12>
+                <div class="headline"> Authors </div>
+              </v-flex>
+              <v-flex xs12 sm6 md3>
+                <div class="subheading"> David Azevedo </div>
+                <a href="mailto:up201405846@fe.up.pt" class="caption"> up201405846@fe.up.pt </a>
+              </v-flex>
+              <v-flex xs12 sm6 md3>
+                <div class="subheading"> João Ferreira </div>
+                <a href="mailto:up201404332@fe.up.pt" class="caption"> up201404332@fe.up.pt </a>
+              </v-flex>
+              <v-flex xs12 sm6 md3>
+                <div class="subheading"> João Costa </div>
+                <a href="mailto:up201403967@fe.up.pt" class="caption"> up201403967@fe.up.pt </a>
+              </v-flex>
+              <v-flex xs12 sm6 md3>
+                <div class="subheading"> José Martins </div>
+                <a href="mailto:up201404189@fe.up.pt" class="caption"> up201404189@fe.up.pt </a>
+              </v-flex>
+            </v-layout>
           </v-layout>
 
         </v-card-title>
@@ -40,18 +45,18 @@
 
           <div class="elevation-2 mt-4"> 
             <div class="headline"> 
-              Useful links - (To Remove in final version)
+              Useful links
             </div>
 
-            <v-layout column wrap class="text-xs-left">
-            <v-flex v-for="(link,i) in links" :complete="complete" :key="i">        
-              <div class="ma-2">
-                <v-btn flat small color="blue" class="text-xs-left ma-0 pa-0 " :href="link.url"> 
-                  <v-icon color="blue darken-2"> check_circle </v-icon>
+            <v-layout mt-2 row wrap justify-center>
+            <v-flex xs6 md2 v-for="(link,i) in links" :complete="complete" :key="i">        
+              
+                <v-btn flat small color="blue darken-2" class="text-xs-left ma-0 pa-0 " :href="link.url"> 
+                  <v-icon> {{link.icon}} </v-icon>
                   <span class="subheading ml-2"> {{link.desc}} </span>
                 </v-btn>             
-                <v-divider class="mt-1 mb-1"></v-divider>
-              </div>
+                
+              
             </v-flex>
             </v-layout>
           </div>
@@ -100,20 +105,14 @@ export default {
       links: [
         {
           "url": "https://docs.google.com/document/d/1A23aWTPzVetgrGntj60HbE1v5BSaAmNCQ6nwFnNIlB0/edit#heading=h.5uvpke651xe0",
-          "desc":"Report"
-        },
-        {
-          "url": "https://docs.google.com/document/d/1PqWf2hrORPL_7wxuJ_LPuW8MqBz7dDrP5Ji9auY2Epo/edit#heading=h.5uvpke651xe0",
-          "desc":"Report template"
+          "desc":"Report",
+          "icon":"book"
         },
         {
           "url": "https://github.com/joaocsf/FEUP-ASSO",
-          "desc":"github"
-        },
-        {
-          "url": "https://drive.google.com/drive/folders/1guzoCxYC20f0u4XQ_r5TjDvrZK0_huBb",
-          "desc":"Drive"
-        },
+          "desc":"github",
+          "icon":"fab fa-github",
+        }
       ]
     }
   }
