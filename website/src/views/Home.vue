@@ -104,7 +104,7 @@ export default {
       ],
       links: [
         {
-          "url": "https://docs.google.com/document/d/1A23aWTPzVetgrGntj60HbE1v5BSaAmNCQ6nwFnNIlB0/edit#heading=h.5uvpke651xe0",
+          "url": "https://bit.ly/ASSO_REPORT",
           "desc":"Report",
           "icon":"book"
         },
