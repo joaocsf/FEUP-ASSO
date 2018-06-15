@@ -170,7 +170,7 @@ class Visualizer {
 
 <br/>
 
-With this in mind, a Visualizer abstract class was created. This class has a method draw which is responsabible for setting the visualization in the correct place.
+With this in mind, a Visualizer abstract class was created. This class has a method draw which is responsible for setting the visualization in the correct place.
 
 <br/>
 
