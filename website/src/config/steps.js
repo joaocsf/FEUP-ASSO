@@ -143,9 +143,6 @@ With this pattern we can associate shapes with other shapes. For now this isn't 
 `,
     step3:
 `
-
-# TO-DO STEP 3
-
 ### Problem
 
 <br/>
@@ -158,11 +155,83 @@ With this pattern we can associate shapes with other shapes. For now this isn't 
 
 <br/>
 
+To solve this we chose to implement a Strategy Pattern. With this pattern we are able to define a set or family algorithms which are interchangeable. Afterwards we implement different types and are able to switch between them in runtime without much trouble.
+
+\`\`\`javascript
+class Visualizer {
+
+  constructor() {}
+
+  draw() {
+    console.error('Abstract Class')
+  }
+}
+\`\`\`
+
+<br/>
+
+With this in mind, a Visualizer abstract class was created. This class has a method draw which is responsabible for setting the visualization in the correct place.
+
+<br/>
+
+\`\`\`javascript
+class TextVisualizer extends Visualizer {
+  constructor(anchor, document) {
+    super()
+    this.document = document
+    this.anchor = anchor
+  }
+
+  representation(group) {
+    group = group || this.document.root
+    let res = \`<div> \${group.getName()} (\${group.x | 0}, \${group.y | 0}) </div>\`
+    let content = ''
+    for(let shape of group.shapes){
+      let isGroup = shape instanceof Group
+      let subcontent = isGroup ? this.representation(shape) : \` \${shape.getName()} (\${shape.x | 0}, \${shape.y | 0})\`
+      content += \`<li class="\${isGroup?'group':' '}" > \${subcontent} </li>\`
+    }
+    if(content.length > 0)
+      res += \`<ul> \${content} </ul>\`
+    return res
+  }
+
+  draw() {
+    this.anchor.innerHTML = this.representation()
+  }
+}
+
+class GraphicVisualizer extends Visualizer {
+  constructor(context, document) {
+    super()
+    this.context = context
+    this.document = document
+  }
+
+  draw(){
+    if(this.context == null) return
+    this.document.root.foreach(
+      (shape) => {
+        if(shape instanceof Group) return
+        this.context.fillStyle = "#FF0000"
+        this.context.fillRect(shape.x, shape.y, 10, 10)
+      }
+    )
+  }
+}
+\`\`\`
+
+<br/>
+
+To exemplify this approach we created two different types of visualizers, a graphical visualizer which takes an HTML canvas context and draws our document onto it and a TextVisualizer which describes the structure of a document with text.
+
 <br/>
 
 ### Test Demo
 
-
+* Add new shapes with the appropriate buttons like in the previous steps.
+* Press 'Switch Views' to switch between Graphic and Text views.
+* Click on 'Update Views' after adding new shapes to update the view.
 `,
     step4:
 `
